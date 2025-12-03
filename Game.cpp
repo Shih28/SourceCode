@@ -135,8 +135,7 @@ Game::game_init() {
 	// init font setting
 	FC->init();
 
-	ui = new UI();
-	ui->init();
+	
 
 	DC->level->init();
 
@@ -174,6 +173,7 @@ Game::game_update() {
 				debug_log("<Game> state: change to MENU\n");
 				state = STATE::MENU;
 			}
+
 			break;
 		} case STATE::MENU: {
 			static bool BGM_played = false;
@@ -199,7 +199,7 @@ Game::game_update() {
 	if(state != STATE::PAUSE) {
 		DC->player->update();
 		SC->update();
-		ui->update();
+		
 		if(state != STATE::START) {
 			DC->level->update();
 			OC->update();
@@ -236,11 +236,11 @@ Game::game_draw() {
 				0, DC->game_field_length,
 				DC->window_width, DC->window_height,
 				al_map_rgb(100, 100, 100));
-				
+
 		// user interface
 		if(state != STATE::START) {
 			DC->level->draw();
-			ui->draw();
+			
 			OC->draw();
 		}
 	}

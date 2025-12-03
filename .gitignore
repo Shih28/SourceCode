@@ -1,0 +1,5 @@
+.vscode
+doxy_file
+*.o
+*.exe
+*.log

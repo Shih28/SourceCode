@@ -2,7 +2,7 @@
 #define GAME_H_INCLUDED
 
 #include <allegro5/allegro.h>
-#include "UI.h"
+
 
 /**
  * @brief Main class that runs the whole game.
@@ -44,7 +44,7 @@ private:
 	ALLEGRO_DISPLAY *display;
 	ALLEGRO_TIMER *timer;
 	ALLEGRO_EVENT_QUEUE *event_queue;
-	UI *ui;
+
 };
 
 #endif

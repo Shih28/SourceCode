@@ -18,8 +18,7 @@ public:
 	void game_init();
 	bool game_update();
 	void game_draw();
-private:
-	/**
+		/**
 	 * @brief States of the game process in game_update.
 	 * @see Game::game_update()
 	 */
@@ -34,8 +33,8 @@ private:
 		FORMATION, // -> LEVEL, BATTLE
 		PAUSE, // -> BATTLE
 		END
-
 	};
+private:
 	STATE state;
 	ALLEGRO_EVENT event;
 	ALLEGRO_BITMAP *game_icon;

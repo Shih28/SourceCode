@@ -1,5 +1,6 @@
 .vscode
 doxy_file
+*.pseuodo
 *.o
 *.exe
 *.log

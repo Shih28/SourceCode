@@ -1,7 +1,8 @@
 OUT := game
 CC := g++
 
-CXXFLAGS := -Wall -std=c++17 -O2
+
+CXXFLAGS := -Wall -std=c++17 -O2	
 SOURCE := $(wildcard *.cpp */*.cpp)
 OBJ := $(patsubst %.cpp, %.o, $(notdir $(SOURCE)))
 RM_OBJ := 
@@ -23,6 +24,7 @@ ifeq ($(OS), Windows_NT) # Windows OS
 		RM_OUT := del $(OUT)
 	endif
 else # Mac OS / Linux
+	
 	UNAME_S := $(shell uname -s)
 	ALLEGRO_LIB_PATH ?= /usr/local/lib
 	ALLEGRO_PKGCONFIG_PATH ?= /usr/local/lib/pkgconfig
@@ -37,6 +39,8 @@ else # Mac OS / Linux
 	ALLEGRO_DLL_PATH_RELEASE := 
 	ALLEGRO_FLAGS_DEBUG := $(ALLEGRO_FLAGS_RELEASE)
 	ALLEGRO_DLL_PATH_DEBUG := 
+
+
 
 	RM_OBJ := rm $(OBJ)
 	RM_OUT := rm $(OUT)

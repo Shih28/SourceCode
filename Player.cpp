@@ -1,24 +1,96 @@
 #include "Player.h"
+#include "Utils.h"
+#include <utility>
+#include <vector>
+#include "single_include/nlohmann/json.hpp"
+#include "facilities/Facility.h"
+#include <fstream>
+#include <filesystem>
 
-// fixed settings
-namespace PlayerSetting {
-	constexpr int init_HP = 3;
-	constexpr int init_coin = 100;
-	constexpr int coin_freq = 60;
-	constexpr int coin_increase = 5;
+const std::string facilitiesPath = "./database/facilitiesData.json";
+using json = nlohmann::json;
+
+const std::pair<int, int> LAND_POS[8] = {
+    {200, 50},
+    {350, 50},
+    {500, 50},
+    {650, 50},
+    {200, 350},
+    {350, 350},
+    {500, 350},
+    {650, 350}
 };
 
-Player::Player() : HP(PlayerSetting::init_HP), coin(PlayerSetting::init_coin) {
-	this->coin_freq = PlayerSetting::coin_freq;
-	this->coin_increase = PlayerSetting::coin_increase;
-	coin_counter = PlayerSetting::coin_freq;
+bool Player::saveFacilities(){
+    try{
+        json root = json::array();
+        for(const auto &f: land_settings) root.push_back(f);
+        std::filesystem::create_directories(std::filesystem::path(facilitiesPath).parent_path());
+        std::ofstream ofs(facilitiesPath);
+        if(!ofs){
+            debug_log("ERROR: failed to open .json in saveFacilities()!\n");
+            return false;
+        }
+        ofs.clear();
+        ofs << root.dump(2);
+        debug_log("SUCESS: facilities' data saved!\n");
+        return true;
+    }catch(const std::exception& e){
+        debug_log("ERROR: failed to save facilities' data!\n");
+        debug_log(e.what());
+        return false;
+    }
 }
 
-void
-Player::update() {
-	if(coin_counter) --coin_counter;
-	else {
-		coin += coin_increase;
-		coin_counter = coin_freq;
-	}
+bool Player::loadFacilties(){
+    try{
+        std::ifstream ifs(facilitiesPath);
+        if(!ifs.is_open()){
+            debug_log("WARNING: no facilitiesData.json start initialization\n");
+            land_settings.clear();
+            for(int i=0; i<Player::MAX_LAND; i++){
+                Facility f = Facility();
+                f.setPos(LAND_POS[0].first, LAND_POS->second);
+            }
+            return true;
+        }
+
+        land_settings.clear();
+        json root;
+        ifs >> root;
+        for(const auto &j: root){
+            land_settings.push_back(j.get<Facility>());
+        }
+        debug_log("SUCESS: facilities' data loaded!\n");
+        return true;
+
+    }catch(const std::exception &e){
+        debug_log("ERROR: fail to load facilities' data!\n");
+        debug_log(e.what());
+        return false;
+    }
+}
+
+void Player::load(){
+    // if(!loadFacilties()){
+    //     debug_log("ERROR: fail to load Facilities data!\n");
+    // }
+
+    land_settings.clear();
+    for(int i=0; i<Player::MAX_LAND; i++){
+        Facility f = Facility();
+        f.setPos(LAND_POS[i].first, LAND_POS[i].second);
+        land_settings.push_back(f);
+    }
+    getPlayer()->setrequest(static_cast<int>(Game::STATE::MENU));
+}
+
+void Player::update(){
+
+}
+
+void Player::write(){
+    if(!saveFacilities()){
+        debug_log("ERROR: fail to save Facilities data!\n");
+    }
 }

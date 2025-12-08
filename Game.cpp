@@ -6,7 +6,6 @@
 #include "data/ImageCenter.h"
 #include "data/FontCenter.h"
 #include "Player.h"
-#include "Level.h"
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -14,6 +13,8 @@
 #include <allegro5/allegro_acodec.h>
 #include <vector>
 #include <cstring>
+#include "scene/Menu.h"
+#include "scene/Farm.h"
 
 // fixed settings
 constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
@@ -135,9 +136,11 @@ Game::game_init() {
 	// init font setting
 	FC->init();
 
+	//player init
+	DC->player->load();
 	
-
-	DC->level->init();
+	//scene init
+	Menu::get()->init();
 
 	// game start
 	background = IC->get(background_img_path);
@@ -165,33 +168,79 @@ Game::game_update() {
 			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
 			if(!is_played) {
 				instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				DC->level->load_level(1);
 				is_played = true;
 			}
 
 			if(!SC->is_playing(instance)) {
-				debug_log("<Game> state: change to MENU\n");
+				debug_log("<Game> state: change to MENU from START\n");
 				state = STATE::MENU;
 			}
 
 			break;
-		} case STATE::MENU: {
+		} 
+		
+		case STATE::MENU: {
 			static bool BGM_played = false;
 			if(!BGM_played) {
 				background = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
 				BGM_played = true;
 			}
-			//TODO
+
+			// debug_log("<Game> state: MENU\n");
+
+			auto MS = Menu::get();
+			MS->update();
+
+			STATE req = static_cast<STATE>(Player::getPlayer()->getRequest());
+			if(req!=state){
+				scene_init(req);
+				debug_log("<Game> state: toggle from MENU\n");
+				state = req;
+			}
 
 			break;
-		} case STATE::PAUSE: {
+		}
+		case STATE::FARM:{
+			// debug_log("<Game> state: FARM\n");
+
+			auto FS = Farm::get();
+			FS->update();
+
+			STATE req = static_cast<STATE>(Player::getPlayer()->getRequest());
+			if(req!=state){
+				scene_init(req);
+				debug_log("<Game> state: toggle from MENU\n");
+				state = req;
+			}
+			break;
+		}
+		case STATE::PROFILE:{
+			debug_log("<Game> state: PROFILE\n");
+			STATE req = static_cast<STATE>(Player::getPlayer()->getRequest());
+			if(req!=state){
+				debug_log("<Game> state: toggle from MENU\n");
+				state = req;
+			}
+			break;
+		}
+		case STATE::STORE: {
+			debug_log("<Game> state: STORE\n");
+			STATE req = static_cast<STATE>(Player::getPlayer()->getRequest());
+			if(req!=state){
+				debug_log("<Game> state: toggle from MENU\n");
+				state = req;
+			}
+			break;
+		} 
+		case STATE::PAUSE: {
 			if(DC->key_state[ALLEGRO_KEY_P] && !DC->prev_key_state[ALLEGRO_KEY_P]) {
 				SC->toggle_playing(background);
-				debug_log("<Game> state: change to MENU\n");
+				debug_log("<Game> state: change to MENU from PAUSE\n");
 				state = STATE::MENU;
 			}
 			break;
-		} case STATE::END: {
+		} 
+		case STATE::END: {
 			return false;
 		}
 	}
@@ -201,13 +250,17 @@ Game::game_update() {
 		SC->update();
 		
 		if(state != STATE::START) {
-			DC->level->update();
 			OC->update();
 		}
 	}
 	// game_update is finished. The states of current frame will be previous states of the next frame.
 	memcpy(DC->prev_key_state, DC->key_state, sizeof(DC->key_state));
 	memcpy(DC->prev_mouse_state, DC->mouse_state, sizeof(DC->mouse_state));
+
+	//debug mouse state
+	// debug_log("%d, %d, %d, %d\n", DC->mouse_state[0], DC->mouse_state[1], DC->mouse_state[2], DC->mouse_state[3]);
+
+	
 	return true;
 }
 
@@ -222,34 +275,21 @@ Game::game_draw() {
 
 	// Flush the screen first.
 	al_clear_to_color(al_map_rgb(100, 100, 100));
-	if(state != STATE::END) {
-		// background
-		al_draw_bitmap(background, 0, 0, 0);
-
-		if(DC->game_field_length < DC->window_width)
-			al_draw_filled_rectangle(
-				DC->game_field_length, 0,
-				DC->window_width, DC->window_height,
-				al_map_rgb(100, 100, 100));
-		if(DC->game_field_length < DC->window_height)
-			al_draw_filled_rectangle(
-				0, DC->game_field_length,
-				DC->window_width, DC->window_height,
-				al_map_rgb(100, 100, 100));
-
-		// user interface
-		if(state != STATE::START) {
-			DC->level->draw();
-			
-			OC->draw();
-		}
-	}
 
 	switch(state) {
 		case STATE::START: {
-		} case STATE::MENU: {
+		} 
+		case STATE::MENU: {
+			auto MS = Menu::get();
+			MS->draw();
 			break;
-		} case STATE::PAUSE: {
+		}
+		case STATE::FARM: {
+			auto FS = Farm::get();
+			FS->draw();
+			break;
+		} 
+		case STATE::PAUSE: {
 			// game layout cover
 			al_draw_filled_rectangle(0, 0, DC->window_width, DC->window_height, al_map_rgba(50, 50, 50, 64));
 			al_draw_text(
@@ -257,10 +297,26 @@ Game::game_draw() {
 				DC->window_width/2., DC->window_height/2.,
 				ALLEGRO_ALIGN_CENTRE, "GAME PAUSED");
 			break;
-		} case STATE::END: {
+		} 
+		case STATE::END: {
 		}
 	}
 	al_flip_display();
+}
+
+void Game::scene_init(STATE st){
+	switch (st){
+	case STATE::MENU:{
+		Menu::get()->init();
+		break;
+	}
+	case STATE::FARM:{
+		Farm::get()->init();
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 Game::~Game() {

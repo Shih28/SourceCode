@@ -1,0 +1,92 @@
+Scene:
+MENU, FARM, STORE, PROFILE
+
+MENU:
+
+    draw();
+        for(u : land_settings) u.draw()
+
+	1. go to LAND_SETTING(FARM)
+    2. go to level
+    3. go to PROFILE
+    4. go to STORE
+
+
+LAND_SETTING(FARM):
+
+data: 
+enum STATE_L{
+    LAND_SETTING,
+    HABITAT_MAIN,
+    HABITAT_FEED,
+    FARM_MAIN,
+    FARM_PLANT
+}
+	if(empty){
+		set the type of land //->LAND_SETTING
+	}else{
+        if(habitat){ //-> HABITAT_MAIN
+            1. choose monsters: //MAIN
+                a. select owned monsters
+                b. buy new monsters //-> go to STORE
+
+            2. feed monsters: //-> FEED
+                use berries to feed the selected monster
+
+            3. destruct the building
+        }else{ // -> FARM_MAIN
+            1. farm settings:
+                a. level_up //MAIN
+                b. plant_berries: //->PLANT
+                    select the type of berries //needs to buy the berries
+
+            2. destruct the building
+        }
+    }
+
+    //written in the Facility object
+    timescale 5 seconds
+    for(monster in habitat){
+        exp += 10
+    }
+
+
+STORE: //buy monsters
+
+data: 
+enum STATE_S{
+    SEL,
+    BUY
+}
+
+
+PROFILE: //show user's level, monsters owned
+
+
+Objects:
+1. Player: // a static object that stores the broad game settings
+
+    data: coins, berries, monsters_owned, level, request(for state transition), land_settings, accessing_id
+    
+    1. loadFile():
+        initialization: land_settings
+	2. periodically: update(), getRequest()
+	3. writeFile()
+    4. setRequest()
+    5. getAcessID()
+    6. setAcessID()
+
+
+2. Facilities (farm, workshops…): 
+    data: id, type, timer, value, monster_in_it, level, status
+	
+	1. load(), write()
+	2. periodically: update(), draw()
+    3. setFacility()
+
+3. Monsters: id, type, level, exp
+	1. create()
+	2. load(), write()
+	3. update()
+
+

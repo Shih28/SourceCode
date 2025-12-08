@@ -72,11 +72,7 @@ public:
 	 * @see Player
 	 */
 	Player *player;
-	/**
-	 * @brief Loads and stores the information of a level.
-	 * @see Level
-	 */
-	Level *level;
+	
 	
 private:
 	DataCenter();

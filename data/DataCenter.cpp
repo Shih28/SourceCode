@@ -1,14 +1,13 @@
 #include "DataCenter.h"
 #include <cstring>
-#include "../Level.h"
 #include "../Player.h"
 
 
 // fixed settings
 namespace DataSetting {
 	constexpr double FPS = 60;
-	constexpr int window_width = 800;
-	constexpr int window_height = 600;
+	constexpr int window_width = 1280;
+	constexpr int window_height = 720;
 	constexpr int game_field_length = 600;
 }
 
@@ -22,12 +21,8 @@ DataCenter::DataCenter() {
 	mouse = Point(0, 0);
 	memset(mouse_state, false, sizeof(mouse_state));
 	memset(prev_mouse_state, false, sizeof(prev_mouse_state));
-	player = new Player();
-	level = new Level();
+	player = Player::getPlayer();
 }
 
 DataCenter::~DataCenter() {
-	delete player;
-	delete level;
-	
 }

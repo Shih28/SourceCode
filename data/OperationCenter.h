@@ -1,6 +1,7 @@
 #ifndef OPERATIONCENTER_H_INCLUDED
 #define OPERATIONCENTER_H_INCLUDED
 
+
 /**
  * @brief Class that defines functions for all object operations.
  * @details Object self-update, draw, and object-to-object interact functions are defined here.

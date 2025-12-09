@@ -24,6 +24,8 @@ public:
 	void update_center_x(const double &x) { this->x = x; }
 	void update_center_y(const double &y) { this->y = y; }
 	const ShapeType getType() const { return ShapeType::POINT; }
+	Point operator+(const Point &other) const { return Point(x + other.x, y + other.y); }
+	bool operator==(const Point &other) const { return x == other.x && y == other.y; }
 public:
 	Point() {}
 	Point(double x, double y) : x{x}, y{y} {}

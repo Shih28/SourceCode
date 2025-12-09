@@ -6,6 +6,7 @@
 #include "data/ImageCenter.h"
 #include "data/FontCenter.h"
 #include "Player.h"
+#include "LevelMenu.h"
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -143,6 +144,7 @@ Game::game_init() {
 	
 	//scene init
 	Menu::get()->init();
+	DC->level_menu->init();
 
 	// game start
 	background = IC->get(background_img_path);
@@ -256,7 +258,7 @@ Game::game_update() {
 			break;
 		} 
 		case STATE::LEVEL: {
-			debug_log("<Game> state: LEVEL\n");
+			DC->level_menu->update();
 			break;
 		}
 		case STATE::END: {
@@ -320,6 +322,10 @@ Game::game_draw() {
 		case STATE::PROFILE:{
 			auto PS = Profile::get();
 			PS->draw();
+			break;
+		}
+		case STATE::LEVEL: {
+			DC->level_menu->draw();
 			break;
 		}
 		case STATE::PAUSE: {

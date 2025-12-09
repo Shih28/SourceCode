@@ -21,7 +21,7 @@ bool checkOverlap(const Point *p, const Rectangle *r) {
 }
 
 bool checkOverlap(const Point *p, const Circle *c) {
-	return (c->r * c->r) <= Point::dist2((*p), Point(c->x, c->y));
+	return (c->r * c->r) >= Point::dist2((*p), Point(c->x, c->y));
 }
 
 bool checkOverlap(const Rectangle *r1, const Rectangle *r2) {

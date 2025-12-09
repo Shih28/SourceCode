@@ -15,6 +15,8 @@
 #include <cstring>
 #include "scene/Menu.h"
 #include "scene/Farm.h"
+#include "scene/Store.h"
+#include "scene/Profile.h"
 
 // fixed settings
 constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
@@ -196,7 +198,7 @@ Game::game_update() {
 			auto MS = Menu::get();
 			MS->update();
 
-			STATE req = static_cast<STATE>(Player::getPlayer()->getRequest());
+			STATE req = Player::getPlayer()->getRequest();
 			if(req!=state){
 				scene_init(req);
 				debug_log("<Game> state: toggle from MENU\n");
@@ -211,7 +213,7 @@ Game::game_update() {
 			auto FS = Farm::get();
 			FS->update();
 
-			STATE req = static_cast<STATE>(Player::getPlayer()->getRequest());
+			STATE req = Player::getPlayer()->getRequest();
 			if(req!=state){
 				scene_init(req);
 				debug_log("<Game> state: toggle from FARM\n");
@@ -220,18 +222,26 @@ Game::game_update() {
 			break;
 		}
 		case STATE::PROFILE:{
+			auto PS = Profile::get();
+			PS->update();
+
 			debug_log("<Game> state: PROFILE\n");
-			STATE req = static_cast<STATE>(Player::getPlayer()->getRequest());
+			STATE req = Player::getPlayer()->getRequest();
 			if(req!=state){
+				scene_init(req);
 				debug_log("<Game> state: toggle from PROFILE\n");
 				state = req;
 			}
 			break;
 		}
 		case STATE::STORE: {
+			auto SS = Store::get();
+			SS->update();
+
 			debug_log("<Game> state: STORE\n");
-			STATE req = static_cast<STATE>(Player::getPlayer()->getRequest());
+			STATE req = Player::getPlayer()->getRequest();
 			if(req!=state){
+				scene_init(req);
 				debug_log("<Game> state: toggle from STORE\n");
 				state = req;
 			}
@@ -268,7 +278,7 @@ Game::game_update() {
 
 	//debug mouse state
 	// debug_log("%d, %d, %d, %d\n", DC->mouse_state[0], DC->mouse_state[1], DC->mouse_state[2], DC->mouse_state[3]);
-
+	// debug_log("%d, %d\n", DC->mouse_state[1], DC->prev_mouse_state[1]);
 	
 	return true;
 }
@@ -302,6 +312,16 @@ Game::game_draw() {
 			FS->draw();
 			break;
 		} 
+		case STATE::STORE: {
+			auto SS = Store::get();
+			SS->draw();
+			break;
+		}
+		case STATE::PROFILE:{
+			auto PS = Profile::get();
+			PS->draw();
+			break;
+		}
 		case STATE::PAUSE: {
 			// game layout cover
 			al_draw_filled_rectangle(0, 0, DC->window_width, DC->window_height, al_map_rgba(50, 50, 50, 64));
@@ -325,6 +345,14 @@ void Game::scene_init(STATE st){
 	}
 	case STATE::FARM:{
 		Farm::get()->init();
+		break;
+	}
+	case STATE::STORE:{
+		Store::get()->init();
+		break;
+	}
+	case STATE::PROFILE: {
+		Profile::get()->init();
 		break;
 	}
 	default:

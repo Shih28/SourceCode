@@ -18,7 +18,7 @@ data:
 enum STATE_L{
     LAND_SETTING,
     HABITAT_MAIN,
-    HABITAT_FEED,
+    HABITAT_MONSTERS,
     FARM_MAIN,
     FARM_PLANT
 }
@@ -27,13 +27,11 @@ enum STATE_L{
 	}else{
         if(habitat){ //-> HABITAT_MAIN
             1. choose monsters: //MAIN
-                a. select owned monsters
-                b. buy new monsters //-> go to STORE
-
-            2. feed monsters: //-> FEED
+                a. select owned monsters //-> HABITAT_MONSTERS
+                    - if want to buy new monsters //-> go to STORE
+                c. feed monsters: 
                 use berries to feed the selected monster
-
-            3. destruct the building
+                d. destruct the building
         }else{ // -> FARM_MAIN
             1. farm settings:
                 a. level_up //MAIN
@@ -55,7 +53,11 @@ STORE: //buy monsters
 
 data: 
 enum STATE_S{
-    SEL,
+    ALL,
+    FIRE,
+    WATER,
+    WIND,
+    LIGHTNING,
     BUY
 }
 

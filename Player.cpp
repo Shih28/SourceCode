@@ -5,7 +5,7 @@
 #include "single_include/nlohmann/json.hpp"
 #include "facilities/Facility.h"
 #include <fstream>
-#include <filesystem>
+// #include <filesystem>
 
 const std::string facilitiesPath = "./database/facilitiesData.json";
 using json = nlohmann::json;
@@ -25,7 +25,7 @@ bool Player::saveFacilities(){
     try{
         json root = json::array();
         for(const auto &f: land_settings) root.push_back(f);
-        std::filesystem::create_directories(std::filesystem::path(facilitiesPath).parent_path());
+        // std::filesystem::create_directories(std::filesystem::path(facilitiesPath).parent_path());
         std::ofstream ofs(facilitiesPath);
         if(!ofs){
             debug_log("ERROR: failed to open .json in saveFacilities()!\n");

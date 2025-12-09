@@ -1,6 +1,7 @@
 #include "DataCenter.h"
 #include <cstring>
 #include "../Player.h"
+#include "../LevelMenu.h"
 
 
 // fixed settings
@@ -22,6 +23,7 @@ DataCenter::DataCenter() {
 	memset(mouse_state, false, sizeof(mouse_state));
 	memset(prev_mouse_state, false, sizeof(prev_mouse_state));
 	player = Player::getPlayer();
+	level_menu = new LevelMenu();
 }
 
 DataCenter::~DataCenter() {

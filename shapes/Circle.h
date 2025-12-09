@@ -2,6 +2,7 @@
 #define CIRCLE_H_INCLUDED
 
 #include "Shape.h"
+#include "Point.h"
 
 /**
  * @see Shape.cpp
@@ -17,6 +18,7 @@ public:
 	const ShapeType getType() const { return ShapeType::CIRCLE; }
 public:
 	Circle() {}
+	Circle(Point point, double r): x{point.x}, y{point.y}, r{r} {};
 	Circle(double x, double y, double r) : x{x}, y{y}, r{r} {}
 	Circle(int x, int y, int r) :
 		x{static_cast<double>(x)},

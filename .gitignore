@@ -4,6 +4,7 @@ doxy_file
 *.o
 *.exe
 *.log
+*.DS_Store
 !allegro_monolith-5.2.dll
 !allegro_monolith-debug-5.2.dll
 !libgcc_s_seh-1.dll

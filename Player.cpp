@@ -5,7 +5,6 @@
 #include "single_include/nlohmann/json.hpp"
 #include "facilities/Facility.h"
 #include <fstream>
-#include <filesystem>
 
 const std::string facilitiesPath = "./database/facilitiesData.json";
 using json = nlohmann::json;
@@ -25,7 +24,7 @@ bool Player::saveFacilities(){
     try{
         json root = json::array();
         for(const auto &f: land_settings) root.push_back(f);
-        std::filesystem::create_directories(std::filesystem::path(facilitiesPath).parent_path());
+
         std::ofstream ofs(facilitiesPath);
         if(!ofs){
             debug_log("ERROR: failed to open .json in saveFacilities()!\n");
@@ -49,9 +48,9 @@ bool Player::loadFacilties(){
             debug_log("WARNING: no facilitiesData.json start initialization\n");
             land_settings.clear();
             for(int i=0; i<Player::MAX_LAND; i++){
-                Facility f = Facility();
-                f.setPos(LAND_POS[i].first, LAND_POS[i].second);
-                land_settings.push_back(f);
+                Facility *f = new Facility();
+                f->setPos(LAND_POS[i].first, LAND_POS[i].second);
+                land_settings.push_back(*f);
             }
             return true;
         }
@@ -76,13 +75,6 @@ void Player::load(){
     if(!loadFacilties()){
         debug_log("ERROR: fail to load Facilities data!\n");
     }
-
-    // land_settings.clear();
-    // for(int i=0; i<Player::MAX_LAND; i++){
-    //     Facility f = Facility();
-    //     f.setPos(LAND_POS[i].first, LAND_POS[i].second);
-    //     land_settings.push_back(f);
-    // }
 
 
     getPlayer()->setrequest(static_cast<int>(Game::STATE::MENU));

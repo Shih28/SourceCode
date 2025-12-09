@@ -8,7 +8,7 @@
 class Farm: public Scene{
     public:
 
-        enum STATE_Ｆ{
+        enum STATE_F{
             LAND_SETTING,
             HABITAT_MAIN,
             HABITAT_FEED,
@@ -28,7 +28,7 @@ class Farm: public Scene{
         }
 
     private:
-    STATE_Ｆ state;
+    STATE_F state;
 
         
 };

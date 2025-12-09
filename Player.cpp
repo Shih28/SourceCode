@@ -9,6 +9,9 @@
 const std::string facilitiesPath = "./database/facilitiesData.json";
 using json = nlohmann::json;
 
+//TODO
+const std::string MONSTER_IMG[30];
+
 const std::pair<int, int> LAND_POS[8] = {
     {200, 50},
     {350, 50},
@@ -76,8 +79,7 @@ void Player::load(){
         debug_log("ERROR: fail to load Facilities data!\n");
     }
 
-
-    getPlayer()->setrequest(static_cast<int>(Game::STATE::MENU));
+    getPlayer()->setrequest(Game::STATE::MENU);
 }
 
 void Player::update(){

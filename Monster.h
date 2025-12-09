@@ -2,6 +2,7 @@
 #define MONSTER_H_INCLUDED
 
 #include "single_include/nlohmann/json.hpp"
+#include "algif5/algif.h"
 
 using json = nlohmann::json;
 
@@ -11,8 +12,6 @@ class Monster{
         void init();
         void draw();
         void update();
-
-        
         
         friend void from_json(const json &j, Monster &m){
             j.at("id").get_to(m.id);
@@ -45,9 +44,16 @@ class Monster{
         Monster():id{i++}, level{1}, exp{0}, species{UNDETERMINED}, type{UNDEFINED}{}
         void setType(TYPE_M t){ type=t;}
         void setSpecies(SPECIES_M s){ species=s;}
+        TYPE_M getType(){ return type;}
+        SPECIES_M getSpecies(){ return species;}
+
+        ALLEGRO_BITMAP* getImg(){ return img;}
+        ALLEGRO_BITMAP* getImgInStore(){ return img_in_store;}
 
     private:
         int id, level, exp;
+        ALLEGRO_BITMAP* img; //can be extend to an array later for animation
+        ALLEGRO_BITMAP* img_in_store;
         SPECIES_M species;
         TYPE_M type;
 };

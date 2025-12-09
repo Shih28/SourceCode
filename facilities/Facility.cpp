@@ -15,7 +15,13 @@ void Facility::draw(){
     std::string img_path = "none";
     switch (type){
     case FARM:
-        img_path = "./assets/image/facilities/farm1.png";
+        if(level==1){
+            img_path = "./assets/image/facilities/farm1.png";
+        }else if(level==2){
+            img_path = "./assets/image/facilities/farm2.png";
+        }else{
+            img_path = "./assets/image/facilities/farm3.png";
+        }
         break;
     case WATER_HABITAT:
         img_path = "./assets/image/facilities/water_hab.png";
@@ -52,6 +58,6 @@ void Facility::update(){
         
         //change to FARM to select the type of buildings to build
         Player::getPlayer()->setAcessID(id);
-        Player::getPlayer()->setrequest(static_cast<int>(Game::STATE::FARM));
+        Player::getPlayer()->setrequest(Game::STATE::FARM);
     }
 }

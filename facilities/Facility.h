@@ -64,6 +64,7 @@ class Facility{
         TYPE_F getType(){return type;}
         int getReward(){return reward; }
         ALLEGRO_TIMER* getTimer(){return timer; }
+        int& getLevel(){ return level;}
 
         void draw();
         void update();

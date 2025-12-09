@@ -2,7 +2,6 @@
 #define FARM_H_INCLUDED
 
 #include "Scene.h"
-#include "../facilities/Facility.h"
 #include <vector>
 
 class Farm: public Scene{
@@ -11,9 +10,9 @@ class Farm: public Scene{
         enum STATE_F{
             LAND_SETTING,
             HABITAT_MAIN,
-            HABITAT_FEED,
+            HABITAT_MONSTERS,
             FARM_MAIN,
-            FARM_PLANT
+            LEVEL_UP
         };
 
 

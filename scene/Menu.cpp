@@ -30,11 +30,11 @@ void Menu::update(){
     auto pfp_pt = Point(95, 98);
     
     if(atk_pt.overlap(DC->mouse, 90) && DC->mouse_state[1]){
-        pl->setrequest(static_cast<int>(Game::STATE::LEVEL));
+        pl->setrequest(Game::STATE::LEVEL);
     }else if(DC->mouse.overlap(shop_pt, 90) && DC->mouse_state[1]){
-        pl->setrequest(static_cast<int>(Game::STATE::STORE));
+        pl->setrequest(Game::STATE::STORE);
     }else if(pfp_pt.overlap(DC->mouse, 90) && DC->mouse_state[1]){
-        pl->setrequest(static_cast<int>(Game::STATE::PROFILE));
+        pl->setrequest(Game::STATE::PROFILE);
     }
 }
 

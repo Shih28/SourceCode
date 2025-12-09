@@ -6,7 +6,6 @@
 #include "data/ImageCenter.h"
 #include "data/FontCenter.h"
 #include "Player.h"
-#include "LevelMenu.h"
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
@@ -14,8 +13,10 @@
 #include <allegro5/allegro_acodec.h>
 #include <vector>
 #include <cstring>
+#include <optional>
 #include "scene/Menu.h"
 #include "scene/Farm.h"
+#include "scene/LevelMenu.h"
 #include "scene/Store.h"
 #include "scene/Profile.h"
 
@@ -144,7 +145,7 @@ Game::game_init() {
 	
 	//scene init
 	Menu::get()->init();
-	DC->level_menu->init();
+	LevelMenu::getInstance()->init();
 
 	// game start
 	background = IC->get(background_img_path);
@@ -258,7 +259,11 @@ Game::game_update() {
 			break;
 		} 
 		case STATE::LEVEL: {
-			DC->level_menu->update();
+			LevelMenu::getInstance()->update();
+			STATE req = static_cast<STATE>(Player::getPlayer()->getRequest());
+			if(req != state){
+				state = req;
+			}
 			break;
 		}
 		case STATE::END: {
@@ -325,7 +330,7 @@ Game::game_draw() {
 			break;
 		}
 		case STATE::LEVEL: {
-			DC->level_menu->draw();
+			LevelMenu::getInstance()->draw();
 			break;
 		}
 		case STATE::PAUSE: {
@@ -351,6 +356,10 @@ void Game::scene_init(STATE st){
 	}
 	case STATE::FARM:{
 		Farm::get()->init();
+		break;
+	}
+	case STATE::LEVEL: {
+		LevelMenu::getInstance()->scene_init();
 		break;
 	}
 	case STATE::STORE:{

@@ -1,7 +1,7 @@
 #ifndef LEVELBUTTON_H_INCLUDED
 #define LEVELBUTTON_H_INCLUDED
 
-#include "shapes/Point.h"
+#include "../shapes/Point.h"
 
 class LevelButton
 {

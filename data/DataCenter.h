@@ -73,8 +73,6 @@ public:
 	 */
 	Player *player;
 	
-	LevelMenu *level_menu;
-	
 private:
 	DataCenter();
 };

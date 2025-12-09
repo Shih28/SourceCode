@@ -3,12 +3,11 @@
 
 #include <optional>
 #include <allegro5/allegro.h>
-#include "data/ImageCenter.h"
-#include "Game.h"
-#include "GameModule.h"
+#include "../shapes/Rectangle.h"
+#include "Scene.h"
 #include "LevelButton.h"
 
-class LevelMenu : public GameModule
+class LevelMenu : public Scene
 {
 private:
   ALLEGRO_BITMAP *background;
@@ -16,16 +15,23 @@ private:
   ALLEGRO_BITMAP *button_hover_image;
   ALLEGRO_BITMAP *button_selected_image;
   ALLEGRO_BITMAP *level_intro_image;
+  ALLEGRO_BITMAP *return_button_image;
+  ALLEGRO_BITMAP *return_hover_button_image;
   int levels_passed;
-  std::optional<Game::STATE> next_state;
   LevelButton level_buttons[6];
   LevelButton* selected_level_button;
-  bool last_mouse_state;
+  Rectangle return_button_rect;
 public:
-  void init() override;
-  void update() override;
-  void draw() override;
-  std::optional<Game::STATE> get_game_state_update_request() override;
+  void init();
+  void scene_init();
+  void update();
+  void draw();
+  void end();
+
+  static LevelMenu* getInstance(){
+    static LevelMenu level_menu;
+    return &level_menu;
+  }
 };
 
 #endif

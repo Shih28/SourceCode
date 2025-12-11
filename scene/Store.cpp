@@ -13,15 +13,35 @@
 
 int Store::page = 0;
 const int MAX_NUM = 4;
-const std::pair<int, int> MONS_POS[4] ={
-    {100, 300},
-    {400, 300},
-    {700, 300},
-    {1100, 300}
-};
 
+// Helper function to get button image with hover effect
+static std::string getButtonImage(const std::string& basePath, bool hovering) {
+    if (!hovering) return basePath;
+    size_t dotPos = basePath.rfind(".png");
+    if (dotPos != std::string::npos) {
+        return basePath.substr(0, dotPos) + "2.png";
+    }
+    return basePath;
+}
+
+// Screen and monster dimensions
+const int SCREEN_WIDTH = 1280;
 const int WIDTH = 80;
 const int HEIGHT = 150;
+
+// Calculate evenly spaced positions for 4 monsters in a single row
+const int HORIZONTAL_SPACING = 260;  // Space between each monster
+const int GRID_WIDTH = (MAX_NUM - 1) * HORIZONTAL_SPACING + WIDTH;
+const int START_X = (SCREEN_WIDTH - GRID_WIDTH) / 2;
+const int Y_POSITION = 300;
+
+// Generate positions using math instead of hardcoding
+const std::pair<int, int> MONS_POS[4] = {
+    {START_X + 0 * HORIZONTAL_SPACING, Y_POSITION},
+    {START_X + 1 * HORIZONTAL_SPACING, Y_POSITION},
+    {START_X + 2 * HORIZONTAL_SPACING, Y_POSITION},
+    {START_X + 3 * HORIZONTAL_SPACING, Y_POSITION}
+};
 
 void Store::init(){
     state = ALL;
@@ -90,13 +110,15 @@ void Store::draw(){
     Player *pl = Player::getPlayer();
     auto &lib = pl->getAllMonsters();                  
     auto IC = ImageCenter::get_instance();
+    auto DC = DataCenter::get_instance();
     auto bg = IC->get("./assets/image/scene/shop.png");
 
     //background
     al_draw_bitmap(bg, 0, 0, 0);
 
     //exit
-    auto exit = IC->get("./assets/image/littleStuff/exit.png");
+    bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+    auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
     al_draw_bitmap(exit, 1100, 10, 0);
 
     //monsters

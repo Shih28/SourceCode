@@ -12,6 +12,16 @@
 #include <string>
 #include "allegro5/allegro_font.h"
 
+// Helper function to get button image with hover effect
+static std::string getButtonImage(const std::string& basePath, bool hovering) {
+    if (!hovering) return basePath;
+    size_t dotPos = basePath.rfind(".png");
+    if (dotPos != std::string::npos) {
+        return basePath.substr(0, dotPos) + "2.png";
+    }
+    return basePath;
+}
+
 
 void Menu::init(){
 
@@ -46,6 +56,8 @@ void Menu::update(){
 void Menu::draw(){
     Player* pl = Player::getPlayer();
     auto IC = ImageCenter::get_instance();
+    auto DC = DataCenter::get_instance();
+    
     //background
     auto bg = IC->get("./assets/image/scene/menu.png");
     al_draw_bitmap(bg, 0, 0, 0);
@@ -60,10 +72,18 @@ void Menu::draw(){
         m.draw();
     }
 
-    //attack, shop, profile
-    auto atk = IC->get("./assets/image/littleStuff/attack.png");
-    auto pfp = IC->get("./assets/image/littleStuff/profile.png");
-    auto shop = IC->get("./assets/image/littleStuff/shop.png");
+    //attack, shop, profile with hover effects
+    auto atk_pt = Point(102, 620);
+    auto shop_pt = Point(1172, 620);
+    auto pfp_pt = Point(95, 98);
+    
+    bool atkHover = atk_pt.overlap(DC->mouse, 90);
+    bool pfpHover = pfp_pt.overlap(DC->mouse, 90);
+    bool shopHover = DC->mouse.overlap(shop_pt, 90);
+    
+    auto atk = IC->get(getButtonImage("./assets/image/littleStuff/attack.png", atkHover));
+    auto pfp = IC->get(getButtonImage("./assets/image/littleStuff/profile.png", pfpHover));
+    auto shop = IC->get(getButtonImage("./assets/image/littleStuff/shop.png", shopHover));
     auto coin = IC->get("./assets/image/littleStuff/coin_bar.png");
     auto berry = IC->get("./assets/image/littleStuff/berry_bar.png");
 

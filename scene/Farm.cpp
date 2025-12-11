@@ -12,30 +12,52 @@
 #include "allegro5/allegro_primitives.h"
 #include "../data/FontCenter.h"
 
-const std::pair<int, int> MONS_POS[4] ={
-    {100, 300},
-    {400, 300},
-    {700, 300},
-    {1100, 300}
-};
-
-const std::pair<int, int> MONS_POS_FEED_MENU [] = {
-    {300, 200},
-    {800, 200}
-};
+// Screen and element dimensions
+const int SCREEN_WIDTH = 1280;
+const int SCREEN_HEIGHT = 720;
 const int WIDTH = 80;
 const int HEIGHT = 150;
 
-const std::pair<int, int> FOOD_DISPLAY_POS[] = {
-    {320, 300}, 
-    {960, 300},
-    {320, 500},
-    {960, 500}
+// Monster selection positions (4 monsters in a row, horizontally centered)
+const int MONS_SPACING = 260;
+const int MONS_GRID_WIDTH = 3 * MONS_SPACING + WIDTH;
+const int MONS_START_X = (SCREEN_WIDTH - MONS_GRID_WIDTH) / 2;
+const int MONS_Y = 300;
+
+const std::pair<int, int> MONS_POS[4] = {
+    {MONS_START_X + 0 * MONS_SPACING, MONS_Y},
+    {MONS_START_X + 1 * MONS_SPACING, MONS_Y},
+    {MONS_START_X + 2 * MONS_SPACING, MONS_Y},
+    {MONS_START_X + 3 * MONS_SPACING, MONS_Y}
 };
 
+// Feeding menu positions (2 monsters, evenly spaced)
+const int FEED_SPACING = 500;
+const int FEED_START_X = (SCREEN_WIDTH - FEED_SPACING) / 2;
+const int FEED_Y = 200;
+
+const std::pair<int, int> MONS_POS_FEED_MENU[] = {
+    {FEED_START_X, FEED_Y},
+    {FEED_START_X + FEED_SPACING, FEED_Y}
+};
+
+// Food display positions (2x2 grid, centered)
+const int FOOD_H_SPACING = 640;  // Horizontal spacing between columns
+const int FOOD_V_SPACING = 200;  // Vertical spacing between rows
+const int FOOD_START_X = 320;
+const int FOOD_START_Y = 300;
+
+const std::pair<int, int> FOOD_DISPLAY_POS[] = {
+    {FOOD_START_X, FOOD_START_Y},                           // Top-left
+    {FOOD_START_X + FOOD_H_SPACING, FOOD_START_Y},         // Top-right
+    {FOOD_START_X, FOOD_START_Y + FOOD_V_SPACING},         // Bottom-left
+    {FOOD_START_X + FOOD_H_SPACING, FOOD_START_Y + FOOD_V_SPACING}  // Bottom-right
+};
+
+// Feed button positions (aligned with feeding positions)
 const std::pair<int, int> FEED_BUTTON[] = {
-    {300, 500},
-    {800, 500}
+    {FEED_START_X, 500},
+    {FEED_START_X + FEED_SPACING, 500}
 };
 
 const int BAR_LENGTH = 200;
@@ -49,6 +71,19 @@ const std::string BAR_IMG[] = {
 const int MAX_ELE_PER_PAGE = 4;
 
 int Farm::page = 0;
+
+// Helper function to get button image with hover effect
+// If hovering is true, attempts to load "name2.png", otherwise loads "name.png"
+static std::string getButtonImage(const std::string& basePath, bool hovering) {
+    if (!hovering) return basePath;
+    
+    // Find the .png extension and insert "2" before it
+    size_t dotPos = basePath.rfind(".png");
+    if (dotPos != std::string::npos) {
+        return basePath.substr(0, dotPos) + "2.png";
+    }
+    return basePath;
+}
 
 void Farm::init(){
     page = 0;
@@ -353,6 +388,7 @@ void Farm::draw(){
     Player* pl = Player::getPlayer();
     Facility &acessFac = pl->getFacilities()[pl->getAcessID()];
     auto IC = ImageCenter::get_instance();
+    auto DC = DataCenter::get_instance();
     std::string bg_path;
     
     switch (state){
@@ -379,8 +415,8 @@ void Farm::draw(){
             al_draw_bitmap(lightning, 1000, 350, 0);
 
             //exit
-            auto exit = IC->get("./assets/image/littleStuff/exit.png");
-            
+            bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+            auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
             al_draw_bitmap(exit, 1100, 10, 0);
 
 
@@ -401,13 +437,21 @@ void Farm::draw(){
             al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
 
             //exit
-            auto exit = IC->get("./assets/image/littleStuff/exit.png");
+            bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+            auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
             al_draw_bitmap(exit, 1100, 10, 0);
 
             //add button
-            auto add = IC->get("./assets/image/littleStuff/add.png");
-            if(!acessFac.getHaveMonsters(0)) al_draw_bitmap(add, 500, 400, 0);
-            if(!acessFac.getHaveMonsters(1)) al_draw_bitmap(add, 800, 400, 0);
+            if(!acessFac.getHaveMonsters(0)) {
+                bool add1Hover = Point(500, 400).overlap(DC->mouse, 40);
+                auto add1 = IC->get(getButtonImage("./assets/image/littleStuff/add.png", add1Hover));
+                al_draw_bitmap(add1, 500, 400, 0);
+            }
+            if(!acessFac.getHaveMonsters(1)) {
+                bool add2Hover = Point(800, 400).overlap(DC->mouse, 40);
+                auto add2 = IC->get(getButtonImage("./assets/image/littleStuff/add.png", add2Hover));
+                al_draw_bitmap(add2, 800, 400, 0);
+            }
             
             //hitboxes
             al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
@@ -464,7 +508,8 @@ void Farm::draw(){
             al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
             
             //exit
-            auto exit = IC->get("./assets/image/littleStuff/exit.png");
+            bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+            auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
             al_draw_bitmap(exit, 1100, 10, 0);
 
             //selection tab
@@ -483,7 +528,8 @@ void Farm::draw(){
             }
 
             //more monsters button
-            auto more = IC->get("./assets/image/littleStuff/more.png");
+            bool moreHover = Rectangle(500, 450, 700, 600).overlap(DC->mouse);
+            auto more = IC->get(getButtonImage("./assets/image/littleStuff/more.png", moreHover));
             al_draw_bitmap(more, 500, 450, 0);
 
             //hitboxes
@@ -499,13 +545,15 @@ void Farm::draw(){
             al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
 
             //exit
-            auto exit = IC->get("./assets/image/littleStuff/exit.png");
+            bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+            auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
             al_draw_bitmap(exit, 1100, 10, 0);
 
             // level up button
             if(acessFac.getLevel()<3){
-            auto level = IC->get("./assets/image/littleStuff/level_up.png");
-            al_draw_bitmap(level, 500, 450, 0);
+                bool levelHover = Rectangle(500, 450, 700, 600).overlap(DC->mouse);
+                auto level = IC->get(getButtonImage("./assets/image/littleStuff/level_up.png", levelHover));
+                al_draw_bitmap(level, 500, 450, 0);
             }
 
             //foods
@@ -528,11 +576,13 @@ void Farm::draw(){
                 bg_path = "./assets/image/scene/food.png";
                 al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
                 
-                auto exit = IC->get("./assets/image/littleStuff/exit.png");
+                bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+                auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
                 al_draw_bitmap(exit, 1100, 10, 0);
                 
                 if(acessFac.getLevel()<3){
-                    auto level = IC->get("./assets/image/littleStuff/level_up.png");
+                    bool levelHover = Rectangle(500, 450, 700, 600).overlap(DC->mouse);
+                    auto level = IC->get(getButtonImage("./assets/image/littleStuff/level_up.png", levelHover));
                     al_draw_bitmap(level, 500, 450, 0);
                 }
                 
@@ -557,18 +607,24 @@ void Farm::draw(){
                 al_draw_bitmap(wind, 750, 350, 0);
                 al_draw_bitmap(lightning, 1000, 350, 0);
                 
-                auto exit = IC->get("./assets/image/littleStuff/exit.png");
+                bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+                auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
                 al_draw_bitmap(exit, 1100, 10, 0);
             }else if(pre_state==HABITAT_MAIN){
                 bg_path = "./assets/image/scene/feed.png";
                 al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
                 
-                auto exit = IC->get("./assets/image/littleStuff/exit.png");
+                bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+                auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
                 al_draw_bitmap(exit, 1100, 10, 0);
                 
-                auto add = IC->get("./assets/image/littleStuff/add.png");
-                al_draw_bitmap(add, 500, 400, 0);
-                al_draw_bitmap(add, 800, 400, 0);
+                bool add1Hover = Point(500, 400).overlap(DC->mouse, 40);
+                auto add1 = IC->get(getButtonImage("./assets/image/littleStuff/add.png", add1Hover));
+                al_draw_bitmap(add1, 500, 400, 0);
+                
+                bool add2Hover = Point(800, 400).overlap(DC->mouse, 40);
+                auto add2 = IC->get(getButtonImage("./assets/image/littleStuff/add.png", add2Hover));
+                al_draw_bitmap(add2, 800, 400, 0);
                 
                 for(int i=0; i<2; i++){
                     if(acessFac.getHaveMonsters(i)){

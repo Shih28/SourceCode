@@ -15,9 +15,12 @@ class Store: public Scene{
             WATER,
             WIND,
             LIGHTNING,
-            BUY_ATTEMPT,
-            SUCESS_PUR,
-            FAIL_PUR
+            PUR_NOTI
+        };
+
+        enum NOTI_S{
+            SUCCESS,
+            FAIL
         };
 
 
@@ -33,7 +36,9 @@ class Store: public Scene{
 
     private:
     void updateMonstersInDisplay();
-    STATE_S state;
+    STATE_S state, pre_state;
+    NOTI_S noti;
+    int noti_cnt;
     int monsters_in_display_idx[4];
         
 };

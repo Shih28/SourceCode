@@ -13,6 +13,7 @@ using json = nlohmann::json;
 class Monster{
     public:
         static const int MAX_ANIMATION = 9;
+        static const int EXP = 1000;
         static int i;
         void init();
         void draw();
@@ -56,7 +57,8 @@ class Monster{
 
         enum TYPE_M{
             UNDEFINED,
-            BAD_GYAUMAL
+            BAD_GYAUMAL_BABY,
+            BAD_GYAUMAL_ADAULT
             //to be added
         };
 
@@ -64,7 +66,7 @@ class Monster{
             : id(Monster::i++), level(1), exp(0),
             x(0), y(0), center_x(0), center_y(0),
             width(50), length(80), dx(1), dy(0),
-            species(SPECIES_M::FIRE), type(TYPE_M::BAD_GYAUMAL),
+            species(SPECIES_M::FIRE), type(TYPE_M::BAD_GYAUMAL_BABY),
             status(STATUS_M::NO_DISPLAY), place(PLACE_M::NONE),
             display_cnt(0), direction(true), feed(false)
         {
@@ -84,6 +86,13 @@ class Monster{
         void setPosFeed(int xp, int yp){
             x_f=xp; y_f=yp;
         }
+        void setPrice(int p){ price=p;}
+        void Feed(){ 
+            feed=true;
+            exp += 100;
+        }
+
+        int getExp(){ return exp;}
         
         PLACE_M getPlacing(){ return place;}
         STATUS_M getStatus(){ return status;}
@@ -91,6 +100,7 @@ class Monster{
         SPECIES_M getSpecies(){ return species;}
 
         int getID(){ return id;}
+        int getPrice(){ return price;}
 
         // --- Image sharing API ---
         // Register images for a monster type (call once per type at startup)
@@ -115,6 +125,7 @@ class Monster{
         int x_f, y_f; //left-up-most for feed menu
         int center_x, center_y;
         int width, length;
+        int price;
         int dx, dy;
 
         SPECIES_M species;

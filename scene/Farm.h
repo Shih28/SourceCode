@@ -22,7 +22,8 @@ class Farm: public Scene{
             LEVEL_UP_SUC,
             LEVEL_UP_FAIL,
             PUR_SUC,
-            PUR_FAIL
+            PUR_FAIL,
+            FEED_FAIL
         };
 
 

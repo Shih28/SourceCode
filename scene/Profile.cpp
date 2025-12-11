@@ -4,6 +4,12 @@
 #include "../data/DataCenter.h"
 #include "../shapes/Point.h"
 #include "allegro5/allegro_primitives.h"
+#include <utility>
+
+//TODO
+const std::pair<int, int> MONS_POS[]={
+    {300, 400}
+};
 
 void Profile::init(){
 
@@ -26,6 +32,13 @@ void Profile::draw(){
 
     //background
     al_draw_bitmap(bg, 0, 0, 0);
+
+    int i=0;
+    for(auto &m: pl->getMonsters()){
+        auto img = m.getImgInPfp();
+        al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
+        i++;
+    }
 
     //exit
     auto exit = IC->get("./assets/image/littleStuff/exit.png");

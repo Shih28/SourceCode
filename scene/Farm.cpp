@@ -33,6 +33,19 @@ const std::pair<int, int> FOOD_DISPLAY_POS[] = {
     {960, 500}
 };
 
+const std::pair<int, int> FEED_BUTTON[] = {
+    {300, 500},
+    {800, 500}
+};
+
+const int BAR_LENGTH = 200;
+const int BAR_HEIGHT = 15;
+const std::string BAR_IMG[] = {
+    "./assets/image/littleStuff/blue_bar.png",
+    "./assets/image/littleStuff/yellow_bar.png"
+};
+
+
 const int MAX_ELE_PER_PAGE = 4;
 
 int Farm::page = 0;
@@ -143,6 +156,7 @@ void Farm::update(){
                     }
                 }
            }
+           int &berries = pl->getBer();
 
             //exit
            if(Point(1100, 10).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
@@ -163,7 +177,6 @@ void Farm::update(){
                     pl->setAcessFacIdx(0);
                     state = HABITAT_MONSTERS;
                 }
-                
            }
            //add monsters if slot empty
            else if(Point(800, 400).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
@@ -171,11 +184,44 @@ void Farm::update(){
                     pl->setAcessFacIdx(1);
                     state = HABITAT_MONSTERS;
                 }
-           }
+           }//feed
+           else if(Rectangle(FEED_BUTTON[0].first, FEED_BUTTON[0].second, FEED_BUTTON[0].first+150, FEED_BUTTON[0].second+80).overlap(DC->mouse)
+                    && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+                if(acessFac.getHaveMonsters(0)){
+                    if(berries>=100){
+                        debug_log("FEED!");
+                        berries -= 100;
+                        pl->getMonsters()[acessFac.getMonsterIndex(0)].Feed();
+                    }else{
+                        noti = FEED_FAIL;
+                        pre_state = HABITAT_MAIN;
+                        state = PUR_NOTI;
+                    }
+                }
+            }//feed
+            else if(Rectangle(FEED_BUTTON[1].first, FEED_BUTTON[1].second, FEED_BUTTON[1].first+150, FEED_BUTTON[1].second+80).overlap(DC->mouse)
+                    && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+                if(acessFac.getHaveMonsters(1)){
+                    
+                    if(berries>=100){
+                        debug_log("FEED!");
+                        berries -= 100;
+                        pl->getMonsters()[acessFac.getMonsterIndex(1)].Feed();
+                    }else{
+                        noti = FEED_FAIL;
+                        pre_state = HABITAT_MAIN;
+                        state = PUR_NOTI;
+                    }
+                }
+            }
+
+
             
             break;
         }
         case HABITAT_MONSTERS: {
+
+            updateMonstersInDisplay();
             //exit
             if(Point(1100, 10).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 pl->setrequest(Game::STATE::MENU);
@@ -291,8 +337,10 @@ void Farm::update(){
                     }else{
                         state = HABITAT_MAIN;
                     }
-                }else{
+                }else if(pre_state==FARM_MAIN){
                     pl->setrequest(Game::STATE::MENU);
+                }else{
+                    state = pre_state;
                 }
             }
             break;
@@ -349,8 +397,6 @@ void Farm::draw(){
         }
         case HABITAT_MAIN:{
 
-            HABITAT_MAIN_GOTO:
-
             bg_path = "./assets/image/scene/feed.png";
             al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
 
@@ -360,8 +406,8 @@ void Farm::draw(){
 
             //add button
             auto add = IC->get("./assets/image/littleStuff/add.png");
-            al_draw_bitmap(add, 500, 400, 0);
-            al_draw_bitmap(add, 800, 400, 0);
+            if(!acessFac.getHaveMonsters(0)) al_draw_bitmap(add, 500, 400, 0);
+            if(!acessFac.getHaveMonsters(1)) al_draw_bitmap(add, 800, 400, 0);
             
             //hitboxes
             al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
@@ -375,6 +421,39 @@ void Farm::draw(){
                     if(idx >= 0 && idx < (int)pl->getMonsters().size()){
                         pl->getMonsters()[idx].draw();
                     }
+                }
+            }
+
+            //berries
+            auto berry = IC->get("./assets/image/littleStuff/berry_bar.png");
+            al_draw_bitmap(berry, 50, 5, 0);
+            std::string b = std::to_string(pl->getBer());
+            al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 75, 15, ALLEGRO_ALIGN_CENTRE, b.c_str());
+
+            for(int i=0; i<2; i++){
+                if(acessFac.getHaveMonsters(i)){
+                    auto feedBut = IC->get("./assets/image/littleStuff/b100.png");
+                    al_draw_bitmap(feedBut, FEED_BUTTON[i].first, FEED_BUTTON[i].second, 0);
+                    al_draw_rectangle(FEED_BUTTON[i].first, FEED_BUTTON[i].second, FEED_BUTTON[i].first+150, FEED_BUTTON[i].second+80, al_map_rgb(255,0,0), 2);
+                }
+                
+            }
+
+            for(int i=0; i<2; i++){
+                if(acessFac.getHaveMonsters(i)){
+                    auto blue_bar = IC->get(BAR_IMG[0]);
+                    auto yellow_bar = IC->get(BAR_IMG[1]);
+                    
+                    double scale = ((double)pl->getMonsters()[acessFac.getMonsterIndex(i)].getExp())/((double)Monster::EXP);
+                    double w = scale*BAR_LENGTH;
+
+                    // debug_log("w: %lf\n", w);
+                    al_draw_bitmap(blue_bar, FEED_BUTTON[i].first, FEED_BUTTON[i].second-80, 0);
+                    al_draw_bitmap_region(yellow_bar, 0, 0, w, 100, FEED_BUTTON[i].first, FEED_BUTTON[i].second-80, 0);
+
+                    std::string str = std::to_string(pl->getMonsters()[acessFac.getMonsterIndex(i)].getExp());
+                    str = str + "/1000";
+                    al_draw_text(FontCenter::get_instance()->caviar_dreams[24], al_map_rgb(255,255,255),FEED_BUTTON[i].first+50, FEED_BUTTON[i].second-100, ALLEGRO_ALIGN_CENTRE, str.c_str());
                 }
             }
             
@@ -506,10 +585,11 @@ void Farm::draw(){
             al_draw_bitmap(IC->get(bg_path), 200, 50, 0);
             std::string str = 
                 (noti==LEVEL_UP_SUC)? "Successfully leveled up!":
-                (noti==LEVEL_UP_FAIL)? "OOPS! You running short, maybe next time?":
+                (noti==LEVEL_UP_FAIL)? "OOPS! You're running short, maybe next time?":
                 (noti==PUR_SUC && pre_state==FARM_MAIN)? "Planted!": 
                 (noti==PUR_SUC)? "Purchase successful!": 
-                "OOPS! You running short, maybe next time?";
+                (noti==FEED_FAIL)? "OOPS! Not enough berries!":
+                "OOPS! You're running short, maybe next time?";
             al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(255,255,255), 640, 360, ALLEGRO_ALIGN_CENTRE, str.c_str());
             break;
         }

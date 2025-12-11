@@ -79,7 +79,6 @@ void Facility::draw(){
     }else if(status==DONE && type==FARM){
         auto berries = IC->get(BERRY_IMG);
         al_draw_bitmap(berries, x+width/2, y-15, 0);
-
         al_draw_rectangle(x+width/2, y-15, x+width, y, al_map_rgb(255, 0, 0), 2);
     }
 

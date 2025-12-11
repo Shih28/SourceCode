@@ -6,6 +6,8 @@
 #include "allegro5/allegro_primitives.h"
 #include "../data/DataCenter.h"
 #include "../shapes/Point.h"
+#include "../data/FontCenter.h"
+#include "allegro5/allegro_font.h"
 #include "../Utils.h"
 #include <vector>
 
@@ -23,13 +25,14 @@ const int HEIGHT = 150;
 
 void Store::init(){
     state = ALL;
+    noti_cnt=0;
     page=0;
 }
 
 void Store::update(){
     auto pl = Player::getPlayer();
-    
     auto DC = DataCenter::get_instance();
+    updateMonstersInDisplay();
     //exit
     if(Point(1100, 10).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
         pl->setrequest(Game::STATE::MENU);
@@ -50,23 +53,35 @@ void Store::update(){
             && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
 
                 int libIdx = monsters_in_display_idx[i];
-                // validate index
                 if(libIdx < 0 || libIdx >= (int)lib.size()){
-                    debug_log("WARN: purchase clicked but no monster mapped for slot %d (idx=%d)\n", i, libIdx);
                     continue;
                 }
-                // copy the template monster from all_monsters into the player's owned list.
-                // images are shared via Monster::registerTypeImages() and maps, so no per-instance image copies needed.
-                Monster *m = new Monster();
                 auto &mask = lib[libIdx];
+                int &coin = pl->getCoin();
 
-                m->setType(mask.getType());
-                m->setSpecies(mask.getSpecies());
-                pl->getMonsters().push_back(*m);
-                 debug_log("idx: %d\n", pl->getMonsters()[0].getPlacing());
-                 debug_log("PURCHESS!\n");
-                 state = SUCESS_PUR;
+                if(coin >= mask.getPrice()){
+                    coin -= mask.getPrice();
+                    Monster *m = new Monster();
+                
+                    m->setType(mask.getType());
+                    m->setSpecies(mask.getSpecies());
+                    pl->getMonsters().push_back(*m);
+                    noti = SUCCESS;
+                }else{
+                    noti = FAIL;
+                }
+                pre_state = state;      
+                state = PUR_NOTI;
             }
+    }
+
+    if(state==PUR_NOTI){
+        if(noti_cnt<=60){
+            noti_cnt++;
+        }else{
+            state = pre_state;
+            noti_cnt=0;
+        }
     }
 
 }
@@ -147,21 +162,15 @@ void Store::draw(){
         }
         break;
     }
-    case BUY_ATTEMPT:{
-        page=0;
-        
+    case PUR_NOTI:{
+        // Draw notification overlay on top
+            auto bg_path = "./assets/image/scene/noti.png";
+            al_draw_bitmap(IC->get(bg_path), 200, 50, 0);
+            std::string str = (noti==SUCCESS)? "Purchess successful!": "OOPS! You're running short!";
+            al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(255,255,255), 640, 360, ALLEGRO_ALIGN_CENTRE, str.c_str());
         break;
     }
-    case SUCESS_PUR:{
-        page=0;
-        
-        break;
-    }
-    case FAIL_PUR:{
-        page=0;
-        
-        break;
-    }
+    
     
     }
 

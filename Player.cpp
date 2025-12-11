@@ -11,9 +11,7 @@
 const std::string facilitiesPath = "./database/facilitiesData.json";
 using json = nlohmann::json;
 
-
-
-const Monster::TYPE_M MONS_TYPE[] = {Monster::BAD_GYAUMAL};
+const Monster::TYPE_M MONS_TYPE[] = {Monster::BAD_GYAUMAL_BABY};
 
 const Monster::SPECIES_M MONS_SPEC[] = {Monster::FIRE};
 
@@ -61,6 +59,12 @@ const std::string MONS_PFP[] ={
     "./assets/image/monsters/fire/BadGyaumal/img_in_pfp.png"
 };
 
+const int MONS_PRICE[] = {
+    1200,
+    1200
+};
+
+
 const std::string FOOD_IMG[] = {
     "./assets/image/foods/sea_grapes.png",
     "./assets/image/foods/red_tigernut.png",
@@ -77,9 +81,6 @@ const std::tuple<int, int, int, int> FOOD_DET[] = {
 };
 
 
-//TODO
-const std::string MONSTER_IMG[30];
-
 const std::pair<int, int> LAND_POS[8] = {
     {50, 120},
     {380, 120},
@@ -90,6 +91,8 @@ const std::pair<int, int> LAND_POS[8] = {
     {710, 400},
     {1040, 400}
 };
+
+
 
 bool Player::saveFacilities(){
     try{
@@ -180,18 +183,19 @@ bool Player::loadAllMonsters(){
 
     // register images for each monster TYPE once
     // For each known TYPE_M, call Monster::registerTypeImages.
-    // Here we only have BAD_GYAUMAL in constants -> register it
+    // Here we only have BAD_GYAUMAL_BABY in constants -> register it
     {
         std::vector<std::string> walk_paths(std::begin(MONS_IMG_WALK), std::end(MONS_IMG_WALK));
         std::vector<std::string> def_paths(std::begin(MONS_IMG_DEF), std::end(MONS_IMG_DEF));
         std::vector<std::string> happy_paths(std::begin(MONS_IMG_HAPPY), std::end(MONS_IMG_HAPPY));
-        Monster::registerTypeImages(Monster::TYPE_M::BAD_GYAUMAL, IC, walk_paths, def_paths, happy_paths, MONS_STORE_PFP[0], MONS_PFP[0]);
+        Monster::registerTypeImages(Monster::TYPE_M::BAD_GYAUMAL_BABY, IC, walk_paths, def_paths, happy_paths, MONS_STORE_PFP[0], MONS_PFP[0]);
     }
 
     for(int i=0; i<MAX_TYPE_OF_MONSTERS; i++){
         Monster m;
         m.setType(MONS_TYPE[i]);
         m.setSpecies(MONS_SPEC[i]);
+        m.setPrice(MONS_PRICE[i]);
         // instance images are not stored anymore — Monster draw/getters use shared maps
         all_monsters.push_back(std::move(m));
     }

@@ -82,6 +82,12 @@ void Monster::init(){
 
 
 void Monster::update(){
+    if(exp>=EXP && level==1){
+        exp = EXP;
+        level++;
+        type = static_cast<TYPE_M>(static_cast<int>(type)+1);
+    }
+
     switch(place){
         case HABITAT:{
             status = WALK;
@@ -95,9 +101,6 @@ void Monster::update(){
                 dy = -dy;
             }
 
-        //     debug_log("%d, %d, %d, %d\n", (int)its_habitat.leftmost(), (int)its_habitat.upmost(), 
-        // x, y);
-
             x += dx;
             y += dy;
             
@@ -105,7 +108,12 @@ void Monster::update(){
         }
         case FEEDING:{
             if(feed){
-                status = HAPPY;
+                if(finishedMovement()){
+                    feed=false;
+                    status = DEFAULT;
+                }else{
+                    status = HAPPY;
+                } 
             }else{
                 status = DEFAULT;
             }

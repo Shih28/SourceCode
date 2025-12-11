@@ -11,58 +11,37 @@
 const std::string facilitiesPath = "./database/facilitiesData.json";
 using json = nlohmann::json;
 
-const Monster::TYPE_M MONS_TYPE[] = {Monster::BAD_GYAUMAL_BABY};
-
-const Monster::SPECIES_M MONS_SPEC[] = {Monster::FIRE};
-
-const std::string MONS_IMG_WALK[] = {
-    "./assets/image/monsters/fire/BadGyaumal/walk/1.png",
-    "./assets/image/monsters/fire/BadGyaumal/walk/2.png",
-    "./assets/image/monsters/fire/BadGyaumal/walk/3.png",
-    "./assets/image/monsters/fire/BadGyaumal/walk/4.png",
-    "./assets/image/monsters/fire/BadGyaumal/walk/5.png",
-    "./assets/image/monsters/fire/BadGyaumal/walk/6.png",
-    "./assets/image/monsters/fire/BadGyaumal/walk/7.png",
-    "./assets/image/monsters/fire/BadGyaumal/walk/8.png",
-    "./assets/image/monsters/fire/BadGyaumal/walk/9.png"
+// Monster configuration structure for easier management
+struct MonsterConfig {
+    Monster::TYPE_M type;
+    Monster::SPECIES_M species;
+    int price;
+    std::string basePath;  // Base path to monster folder
+    int numWalkFrames;
+    int numDefFrames;
+    int numHappyFrames;
 };
 
-const std::string MONS_IMG_DEF[] = {
-    "./assets/image/monsters/fire/BadGyaumal/default/1.png",
-    "./assets/image/monsters/fire/BadGyaumal/default/2.png",
-    "./assets/image/monsters/fire/BadGyaumal/default/3.png",
-    "./assets/image/monsters/fire/BadGyaumal/default/4.png",
-    "./assets/image/monsters/fire/BadGyaumal/default/5.png",
-    "./assets/image/monsters/fire/BadGyaumal/default/6.png",
-    "./assets/image/monsters/fire/BadGyaumal/default/7.png",
-    "./assets/image/monsters/fire/BadGyaumal/default/8.png",
-    "./assets/image/monsters/fire/BadGyaumal/default/9.png"
+// Configure all monsters here - easy to add new ones!
+const MonsterConfig MONSTER_CONFIGS[] = {
+    {
+        Monster::BAD_GYAUMAL_BABY,
+        Monster::FIRE,
+        1200,
+        "./assets/image/monsters/fire/BadGyaumal/1",
+        9, 9, 9
+    },
+    {
+        Monster::BAD_GYAUMAL_ADAULT,
+        Monster::FIRE,
+        2500,
+        "./assets/image/monsters/fire/BadGyaumal/2",
+        9, 9, 9
+    }
+    // Add more monsters here easily!
 };
 
-const std::string MONS_IMG_HAPPY[] = {
-    "./assets/image/monsters/fire/BadGyaumal/happy/1.png",
-    "./assets/image/monsters/fire/BadGyaumal/happy/2.png",
-    "./assets/image/monsters/fire/BadGyaumal/happy/3.png",
-    "./assets/image/monsters/fire/BadGyaumal/happy/4.png",
-    "./assets/image/monsters/fire/BadGyaumal/happy/5.png",
-    "./assets/image/monsters/fire/BadGyaumal/happy/6.png",
-    "./assets/image/monsters/fire/BadGyaumal/happy/7.png",
-    "./assets/image/monsters/fire/BadGyaumal/happy/8.png",
-    "./assets/image/monsters/fire/BadGyaumal/happy/9.png"
-};
-
-const std::string MONS_STORE_PFP[] ={
-    "./assets/image/monsters/fire/BadGyaumal/img_in_store.png"
-};
-
-const std::string MONS_PFP[] ={
-    "./assets/image/monsters/fire/BadGyaumal/img_in_pfp.png"
-};
-
-const int MONS_PRICE[] = {
-    1200,
-    1200
-};
+const int MAX_TYPE_OF_MONSTERS = sizeof(MONSTER_CONFIGS) / sizeof(MonsterConfig);
 
 
 const std::string FOOD_IMG[] = {
@@ -181,24 +160,47 @@ bool Player::loadAllMonsters(){
     auto IC = ImageCenter::get_instance();
     all_monsters.clear();
 
-    // register images for each monster TYPE once
-    // For each known TYPE_M, call Monster::registerTypeImages.
-    // Here we only have BAD_GYAUMAL_BABY in constants -> register it
-    {
-        std::vector<std::string> walk_paths(std::begin(MONS_IMG_WALK), std::end(MONS_IMG_WALK));
-        std::vector<std::string> def_paths(std::begin(MONS_IMG_DEF), std::end(MONS_IMG_DEF));
-        std::vector<std::string> happy_paths(std::begin(MONS_IMG_HAPPY), std::end(MONS_IMG_HAPPY));
-        Monster::registerTypeImages(Monster::TYPE_M::BAD_GYAUMAL_BABY, IC, walk_paths, def_paths, happy_paths, MONS_STORE_PFP[0], MONS_PFP[0]);
-    }
-
-    for(int i=0; i<MAX_TYPE_OF_MONSTERS; i++){
+    // Loop through each monster configuration
+    for(int i = 0; i < MAX_TYPE_OF_MONSTERS; i++) {
+        const MonsterConfig& config = MONSTER_CONFIGS[i];
+        
+        debug_log("Loading monster type %d from: %s\n", config.type, config.basePath.c_str());
+        
+        // Build image paths dynamically
+        std::vector<std::string> walk_paths;
+        std::vector<std::string> def_paths;
+        std::vector<std::string> happy_paths;
+        
+        for(int frame = 1; frame <= config.numWalkFrames; frame++) {
+            walk_paths.push_back(config.basePath + "/walk/" + std::to_string(frame) + ".png");
+        }
+        
+        for(int frame = 1; frame <= config.numDefFrames; frame++) {
+            def_paths.push_back(config.basePath + "/default/" + std::to_string(frame) + ".png");
+        }
+        
+        for(int frame = 1; frame <= config.numHappyFrames; frame++) {
+            happy_paths.push_back(config.basePath + "/happy/" + std::to_string(frame) + ".png");
+        }
+        
+        std::string store_img = config.basePath + "/img_in_store.png";
+        std::string pfp_img = config.basePath + "/img_in_pfp.png";
+        
+        debug_log("  Store image: %s\n", store_img.c_str());
+        debug_log("  Profile image: %s\n", pfp_img.c_str());
+        
+        // Register all images for this monster type
+        Monster::registerTypeImages(config.type, IC, walk_paths, def_paths, happy_paths, store_img, pfp_img);
+        
+        // Create monster instance
         Monster m;
-        m.setType(MONS_TYPE[i]);
-        m.setSpecies(MONS_SPEC[i]);
-        m.setPrice(MONS_PRICE[i]);
-        // instance images are not stored anymore — Monster draw/getters use shared maps
+        m.setType(config.type);
+        m.setSpecies(config.species);
+        m.setPrice(config.price);
         all_monsters.push_back(std::move(m));
     }
+    
+    debug_log("Successfully loaded %d monster types\n", MAX_TYPE_OF_MONSTERS);
     return true;
 }
 

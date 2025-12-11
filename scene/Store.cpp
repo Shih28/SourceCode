@@ -127,14 +127,15 @@ void Store::draw(){
         debug_log("lib size: %d\n", lib.size());
         // draw up to MAX_NUM items on the current page and populate display index mapping
         int start = page * MAX_NUM;
-        for(int slot = 0; slot < MAX_NUM; ++slot){
+        for(int slot = 0; slot < MAX_NUM; slot+=2){
             int libIdx = start + slot;
             if(libIdx >= (int)lib.size()){
                 monsters_in_display_idx[slot] = -1;
                 continue;
             }
             monsters_in_display_idx[slot] = libIdx;
-            al_draw_bitmap(lib[libIdx].getImgInStore(), MONS_POS[slot].first, MONS_POS[slot].second, 0);
+            auto img = lib[libIdx].getImgInStore();
+            if(img) al_draw_bitmap(img, MONS_POS[slot].first, MONS_POS[slot].second, 0);
             al_draw_rectangle(MONS_POS[slot].first, MONS_POS[slot].second,
                 MONS_POS[slot].first+WIDTH, MONS_POS[slot].second+HEIGHT, al_map_rgb(255,0,0), 2);
         }
@@ -145,7 +146,8 @@ void Store::draw(){
         int i=0;
         for(auto &m: lib){
             if(m.getSpecies()==Monster::SPECIES_M::FIRE){
-                al_draw_bitmap(m.getImgInStore(), MONS_POS[i].first, MONS_POS[i].second, 0);
+                auto img = m.getImgInStore();
+                if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
                 i++;
             }
         }
@@ -156,7 +158,8 @@ void Store::draw(){
         int i=0;
         for(auto &m: lib){
             if(m.getSpecies()==Monster::SPECIES_M::WATER){
-                al_draw_bitmap(m.getImgInStore(), MONS_POS[i].first, MONS_POS[i].second, 0);
+                auto img = m.getImgInStore();
+                if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
                 i++;
             }
         }
@@ -167,7 +170,8 @@ void Store::draw(){
         int i=0;
         for(auto &m: lib){
             if(m.getSpecies()==Monster::SPECIES_M::WIND){
-                al_draw_bitmap(m.getImgInStore(), MONS_POS[i].first, MONS_POS[i].second, 0);
+                auto img = m.getImgInStore();
+                if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
                 i++;
             }
         }
@@ -178,7 +182,8 @@ void Store::draw(){
         int i=0;
         for(auto &m: lib){
             if(m.getSpecies()==Monster::SPECIES_M::LIGHTNING){
-                al_draw_bitmap(m.getImgInStore(), MONS_POS[i].first, MONS_POS[i].second, 0);
+                auto img = m.getImgInStore();
+                if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
                 i++;
             }
         }

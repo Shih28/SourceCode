@@ -54,10 +54,9 @@ private:
 	std::vector<Monster> monster_owned;
 	std::vector<Monster> all_monsters;
 	std::unordered_map<Food::TYPE_F, Food> all_food;
-	const int MAX_TYPE_OF_MONSTERS = 1;
+	const int MAX_TYPE_OF_MONSTERS = 2;
 	const int MAX_LAND = 8;
 	int accessID;
-
 	
 };
 

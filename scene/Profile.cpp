@@ -77,7 +77,7 @@ void Profile::draw(){
     for(int i = 0; i < monstersToDisplay; i++){
         auto pos = getMonsterPosition(i);
         auto img = pl->getMonsters()[i].getImgInPfp();
-        al_draw_bitmap(img, pos.first, pos.second, 0);
+        if(img) al_draw_bitmap(img, pos.first, pos.second, 0);
         
         // Optional: draw hitboxes for debugging
         // al_draw_rectangle(pos.first, pos.second, 

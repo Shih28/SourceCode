@@ -68,7 +68,7 @@ class Monster{
             width(50), length(80), dx(1), dy(0),
             species(SPECIES_M::FIRE), type(TYPE_M::BAD_GYAUMAL_BABY),
             status(STATUS_M::NO_DISPLAY), place(PLACE_M::NONE),
-            display_cnt(0), direction(true), feed(false)
+            display_cnt(0), direction(true), feed(false), upgrade_finished(false)
         {
         }
         void setType(TYPE_M t){ type=t;}
@@ -93,6 +93,7 @@ class Monster{
         }
 
         int getExp(){ return exp;}
+        int getLevel(){ return level;}
         
         PLACE_M getPlacing(){ return place;}
         STATUS_M getStatus(){ return status;}
@@ -127,6 +128,7 @@ class Monster{
         int width, length;
         int price;
         int dx, dy;
+        bool upgrade_finished;
 
         SPECIES_M species;
         TYPE_M type;

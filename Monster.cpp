@@ -44,6 +44,8 @@ void Monster::registerTypeImages(TYPE_M type,
 
     s_store_map[type] = IC->get(store_path);
     s_pfp_map[type] = IC->get(pfp_path);
+    
+    debug_log("Successfully registered monster type %d\n", type);
 }
 
 ALLEGRO_BITMAP* Monster::getWalkFrame(int frame) const {
@@ -82,11 +84,14 @@ void Monster::init(){
 
 
 void Monster::update(){
-    if(exp>=EXP && level==1){
-        exp = EXP;
+    if(exp>=EXP && !upgrade_finished){
+        exp = 0;
         level++;
-        type = static_cast<TYPE_M>(static_cast<int>(type)+1);
+        if(level==2) type = static_cast<TYPE_M>(static_cast<int>(type)+1);
+        else if(level>2) upgrade_finished=true;
     }
+
+    debug_log("monster type %d\n", type);
 
     switch(place){
         case HABITAT:{

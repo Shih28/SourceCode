@@ -34,11 +34,11 @@ const std::pair<int, int> MONS_POS[4] = {
 // Feeding menu positions (2 monsters, evenly spaced)
 const int FEED_SPACING = 500;
 const int FEED_START_X = (SCREEN_WIDTH - FEED_SPACING) / 2;
-const int FEED_Y = 200;
+const int FEED_Y = 400;
 
 const std::pair<int, int> MONS_POS_FEED_MENU[] = {
-    {FEED_START_X, FEED_Y},
-    {FEED_START_X + FEED_SPACING, FEED_Y}
+    {FEED_START_X-100, FEED_Y},
+    {FEED_START_X-20 + FEED_SPACING, FEED_Y}
 };
 
 // Food display positions (2x2 grid, centered)
@@ -56,8 +56,8 @@ const std::pair<int, int> FOOD_DISPLAY_POS[] = {
 
 // Feed button positions (aligned with feeding positions)
 const std::pair<int, int> FEED_BUTTON[] = {
-    {FEED_START_X, 500},
-    {FEED_START_X + FEED_SPACING, 500}
+    {FEED_START_X, 600},
+    {FEED_START_X + FEED_SPACING, 600}
 };
 
 const int BAR_LENGTH = 200;
@@ -454,7 +454,7 @@ void Farm::draw(){
             }
             
             //hitboxes
-            al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
+            al_draw_circle(1110, 30, 40, al_map_rgb(255,0,0), 2);
             al_draw_circle(500, 400, 40, al_map_rgb(255,0,0), 2);
             al_draw_circle(800, 400, 40, al_map_rgb(255,0,0), 2);
 
@@ -472,10 +472,10 @@ void Farm::draw(){
             auto berry = IC->get("./assets/image/littleStuff/berry_bar.png");
             al_draw_bitmap(berry, 50, 5, 0);
             std::string b = std::to_string(pl->getBer());
-            al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 75, 15, ALLEGRO_ALIGN_CENTRE, b.c_str());
+            al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 120, 17, ALLEGRO_ALIGN_CENTRE, b.c_str());
 
             for(int i=0; i<2; i++){
-                if(acessFac.getHaveMonsters(i)){
+                if(acessFac.getHaveMonsters(i) && pl->getMonsters()[acessFac.getMonsterIndex(i)].getLevel()<=2){
                     auto feedBut = IC->get("./assets/image/littleStuff/b100.png");
                     al_draw_bitmap(feedBut, FEED_BUTTON[i].first, FEED_BUTTON[i].second, 0);
                     al_draw_rectangle(FEED_BUTTON[i].first, FEED_BUTTON[i].second, FEED_BUTTON[i].first+150, FEED_BUTTON[i].second+80, al_map_rgb(255,0,0), 2);
@@ -521,7 +521,8 @@ void Farm::draw(){
             int i=0;
             for(auto &m: pl->getMonsters()){
                 if(m.getPlacing()==Monster::PLACE_M::NONE && match(m, acessFac)){
-                    al_draw_bitmap(m.getImgInPfp(), MONS_POS[i].first, MONS_POS[i].second, 0);
+                    auto img = m.getImgInPfp();
+                    if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
                     al_draw_rectangle(MONS_POS[i].first, MONS_POS[i].second, MONS_POS[i].first+WIDTH, MONS_POS[i].second+HEIGHT, al_map_rgb(255,0,0), 2);
                     i++;
                 }

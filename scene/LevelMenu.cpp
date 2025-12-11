@@ -14,6 +14,7 @@
 #include "../Player.h"
 #include "LevelMenu.h"
 #include "LevelButton.h"
+#include "BattleField.h"
 
 namespace levelmenu {
   constexpr char background_image_path[] = "./assets/image/levelmenu/background.png";
@@ -85,8 +86,6 @@ void LevelMenu::init()
   // Position close button at top-right of intro image and go button at bottom-right
   int intro_x = 500;
   int intro_y = 100;
-  int intro_width = al_get_bitmap_width(level_intro_image);
-  int intro_height = al_get_bitmap_height(level_intro_image);
   
   close_button_rect = Rectangle(intro_x + 336, intro_y + 29, 
                                  intro_x + 336 + al_get_bitmap_width(close_button_image), 
@@ -163,8 +162,8 @@ void LevelMenu::update()
     
     if (animated_go_rect.overlap(DC->mouse)) {
       if (DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
-        // SC->play(levelmenu::button_selected_sound_path, ALLEGRO_PLAYMODE_ONCE);
-        Player::getPlayer()->setrequest(Game::STATE::LEVEL);
+        SC->play(levelmenu::button_selected_sound_path, ALLEGRO_PLAYMODE_ONCE);
+        Player::getPlayer()->setrequest(Game::STATE::FORMATION);
         debug_log("<LevelMenu> Go button clicked, starting level %d\n", selected_level_button->level);
       }
     }

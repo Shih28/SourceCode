@@ -19,6 +19,8 @@
 #include "scene/LevelMenu.h"
 #include "scene/Store.h"
 #include "scene/Profile.h"
+#include "scene/BattleField.h"
+#include "scene/Formation.h"
 
 // fixed settings
 constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
@@ -146,6 +148,8 @@ Game::game_init() {
 	//scene init
 	Menu::get()->veryInit();
 	LevelMenu::getInstance()->init();
+	Formation::get()->init();
+	BattleField::get()->init();
 
 	// game start
 	background = IC->get(background_img_path);
@@ -267,6 +271,31 @@ bool Game::game_update() {
 			LevelMenu::getInstance()->update();
 			STATE req = static_cast<STATE>(Player::getPlayer()->getRequest());
 			if(req != state){
+				scene_init(req);
+				state = req;
+			}
+			break;
+		}
+		case STATE::FORMATION: {
+			auto FM = Formation::get();
+			FM->update();
+
+			STATE req = Player::getPlayer()->getRequest();
+			if(req != state){
+				scene_init(req);
+				debug_log("<Game> state: toggle from FORMATION\n");
+				state = req;
+			}
+			break;
+		}
+		case STATE::BATTLE: {
+			auto BF = BattleField::get();
+			BF->update();
+
+			STATE req = Player::getPlayer()->getRequest();
+			if(req != state){
+				scene_init(req);
+				debug_log("<Game> state: toggle from BATTLE\n");
 				state = req;
 			}
 			break;
@@ -347,6 +376,16 @@ Game::game_draw() {
 			LevelMenu::getInstance()->draw();
 			break;
 		}
+		case STATE::FORMATION: {
+			auto FM = Formation::get();
+			FM->draw();
+			break;
+		}
+		case STATE::BATTLE: {
+			auto BF = BattleField::get();
+			BF->draw();
+			break;
+		}
 		case STATE::PAUSE: {
 			// game layout cover
 			al_draw_filled_rectangle(0, 0, DC->window_width, DC->window_height, al_map_rgba(50, 50, 50, 64));
@@ -382,6 +421,14 @@ void Game::scene_init(STATE st){
 	}
 	case STATE::PROFILE: {
 		Profile::get()->init();
+		break;
+	}
+	case STATE::FORMATION: {
+		Formation::get()->scene_init();
+		break;
+	}
+	case STATE::BATTLE: {
+		BattleField::get()->init();
 		break;
 	}
 	default:

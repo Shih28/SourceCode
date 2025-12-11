@@ -35,11 +35,12 @@ private:
   double intro_target_y;
   int animation_frame;
 public:
-  void init();
+  void init() override;
+  void update() override;
+  void draw() override;
+  void end() override;
+  
   void scene_init();
-  void update();
-  void draw();
-  void end();
 
   static LevelMenu* getInstance(){
     static LevelMenu level_menu;

@@ -63,6 +63,7 @@ void Store::init(){
 
 void Store::update(){
     auto pl = Player::getPlayer();
+    
     auto DC = DataCenter::get_instance();
     
     //exit

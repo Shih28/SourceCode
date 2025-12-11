@@ -167,6 +167,12 @@ Game::game_update() {
 	SoundCenter *SC = SoundCenter::get_instance();
 	static ALLEGRO_SAMPLE_INSTANCE *background = nullptr;
 
+	if(state != STATE::START){
+		for(auto &f: Player::getPlayer()->getFacilities()){
+			f.timeUpdate();
+		}
+	}
+
 	switch(state) {
 		case STATE::START: {
 			static bool is_played = false;

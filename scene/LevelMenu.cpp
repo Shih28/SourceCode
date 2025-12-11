@@ -115,7 +115,7 @@ void LevelMenu::update()
 
   if (return_button_rect.overlap(DC->mouse)) {
     if (DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
-      SC->play(levelmenu::button_selected_sound_path, ALLEGRO_PLAYMODE_ONCE);
+      // SC->play(levelmenu::button_selected_sound_path, ALLEGRO_PLAYMODE_ONCE);
       Player::getPlayer()->setrequest(Game::STATE::MENU);
     } 
   }
@@ -125,7 +125,7 @@ void LevelMenu::update()
     if (DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
       selected_level_button = NULL;
       intro_animating = false;
-      SC->play(levelmenu::button_selected_sound_path, ALLEGRO_PLAYMODE_ONCE);
+      // SC->play(levelmenu::button_selected_sound_path, ALLEGRO_PLAYMODE_ONCE);
       debug_log("<LevelMenu> Close button clicked\n");
     }
   }
@@ -163,7 +163,7 @@ void LevelMenu::update()
     
     if (animated_go_rect.overlap(DC->mouse)) {
       if (DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
-        SC->play(levelmenu::button_selected_sound_path, ALLEGRO_PLAYMODE_ONCE);
+        // SC->play(levelmenu::button_selected_sound_path, ALLEGRO_PLAYMODE_ONCE);
         Player::getPlayer()->setrequest(Game::STATE::LEVEL);
         debug_log("<LevelMenu> Go button clicked, starting level %d\n", selected_level_button->level);
       }
@@ -174,11 +174,11 @@ void LevelMenu::update()
     if (Circle(button.position + Point(60, 60), 50).overlap(DC->mouse)) {
       if (!button.hover) {
         button.hover = true;
-        SC->play(levelmenu::button_hover_sound_path, ALLEGRO_PLAYMODE_ONCE);
+        // SC->play(levelmenu::button_hover_sound_path, ALLEGRO_PLAYMODE_ONCE);
       }
       if (DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
         selected_level_button = &button;
-        SC->play(levelmenu::button_selected_sound_path, ALLEGRO_PLAYMODE_ONCE);
+        // SC->play(levelmenu::button_selected_sound_path, ALLEGRO_PLAYMODE_ONCE);
         debug_log("<LevelMenu> selected level %d\n", button.level);
         
         // Start drop animation

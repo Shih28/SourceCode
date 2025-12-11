@@ -2,6 +2,7 @@
 #define STORE_H_INCLUDED
 
 #include "Scene.h"
+#include "../Monster.h"
 #include <vector>
 
 class Store: public Scene{
@@ -31,8 +32,9 @@ class Store: public Scene{
         }
 
     private:
+    void updateMonstersInDisplay();
     STATE_S state;
-
+    int monsters_in_display_idx[4];
         
 };
 

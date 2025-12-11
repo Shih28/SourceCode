@@ -4,10 +4,13 @@
 #include "../single_include/nlohmann/json.hpp"
 #include "../data/ImageCenter.h"
 #include "../facilities/Facility.h"
+#include "../data/FontCenter.h"
 #include "allegro5/allegro_primitives.h"
 #include "../data/DataCenter.h"
 #include "../shapes/Circle.h"
 #include "../Player.h"
+#include <string>
+#include "allegro5/allegro_font.h"
 
 
 void Menu::init(){
@@ -18,10 +21,12 @@ void Menu::init(){
 void Menu::update(){
     Player* pl = Player::getPlayer();
     auto DC = DataCenter::get_instance();
-    // debug_log("<Menu> updating\n");
+
+    for(auto &m: pl->getMonsters()){
+        m.update();
+    }
 
     for(auto &f: pl->getFacilities()){
-        // debug_log("<Menu> updating f\n");
         f.update();
     }
 
@@ -50,6 +55,11 @@ void Menu::draw(){
         f.draw();
     }
 
+    //monsters
+    for(auto &m: pl->getMonsters()){
+        m.draw();
+    }
+
     //attack, shop, profile
     auto atk = IC->get("./assets/image/littleStuff/attack.png");
     auto pfp = IC->get("./assets/image/littleStuff/profile.png");
@@ -63,9 +73,14 @@ void Menu::draw(){
     al_draw_bitmap(coin, 400, 5, 0);
     al_draw_bitmap(berry, 850, 5, 0);
 
-    // al_draw_circle(102, 620, 90, al_map_rgb(255, 0, 0), 2);
-    // al_draw_circle(1172, 620, 90, al_map_rgb(255, 0, 0), 2);
-    // al_draw_circle(95, 98, 90, al_map_rgb(255, 0, 0), 2);
+    //draw number of berries and coins
+    std::string c, b;
+    auto FC = FontCenter::get_instance();
+    b = std::to_string(pl->getBer());
+    c = std::to_string(pl->getCoin());
+    
+    al_draw_text(FC->caviar_dreams[36], al_map_rgb(0,0,0), 500, 15, 0, c.c_str());
+    al_draw_text(FC->caviar_dreams[36], al_map_rgb(0,0,0), 960, 15, 0, b.c_str());
     
     
 }

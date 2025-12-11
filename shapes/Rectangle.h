@@ -12,6 +12,10 @@ public:
 	bool overlap(const Shape &s) const;
 	double center_x() const { return (x1 + x2) / 2; }
 	double center_y() const { return (y1 + y2) / 2; }
+	double leftmost() const { return x1;}
+	double rightmost() const{ return x2;}
+	double upmost() const { return y1;}
+	double downmost() const{ return y2;}
 	void update_center_x(const double &x) {
 		double dx = x - center_x();
 		x1 += dx, x2 += dx;

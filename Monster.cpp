@@ -11,7 +11,9 @@ std::unordered_map<Monster::TYPE_M, std::vector<ALLEGRO_BITMAP*>> Monster::s_wal
 std::unordered_map<Monster::TYPE_M, std::vector<ALLEGRO_BITMAP*>> Monster::s_def_map;
 std::unordered_map<Monster::TYPE_M, std::vector<ALLEGRO_BITMAP*>> Monster::s_happy_map;
 std::unordered_map<Monster::TYPE_M, ALLEGRO_BITMAP*> Monster::s_store_map;
+std::unordered_map<Monster::TYPE_M, ALLEGRO_BITMAP*> Monster::s_store_hover_map;
 std::unordered_map<Monster::TYPE_M, ALLEGRO_BITMAP*> Monster::s_pfp_map;
+std::unordered_map<Monster::TYPE_M, ALLEGRO_BITMAP*> Monster::s_pfp_hover_map;
 
 void Monster::registerTypeImages(TYPE_M type,
                                  ImageCenter* IC,
@@ -43,7 +45,22 @@ void Monster::registerTypeImages(TYPE_M type,
     s_happy_map[type] = std::move(happy_frames);
 
     s_store_map[type] = IC->get(store_path);
+    
+    // Auto-load hover image by adding "2" before .png
+    size_t dotPos = store_path.rfind(".png");
+    if(dotPos != std::string::npos) {
+        std::string hoverPath = store_path.substr(0, dotPos) + "2.png";
+        s_store_hover_map[type] = IC->get(hoverPath);
+    }
+    
     s_pfp_map[type] = IC->get(pfp_path);
+    
+    // Auto-load pfp hover image
+    size_t pfpDotPos = pfp_path.rfind(".png");
+    if(pfpDotPos != std::string::npos) {
+        std::string pfpHoverPath = pfp_path.substr(0, pfpDotPos) + "2.png";
+        s_pfp_hover_map[type] = IC->get(pfpHoverPath);
+    }
     
     debug_log("Successfully registered monster type %d\n", type);
 }
@@ -73,9 +90,25 @@ ALLEGRO_BITMAP* Monster::getImgInStore() const {
     auto it = s_store_map.find(type);
     return (it == s_store_map.end()) ? nullptr : it->second;
 }
+ALLEGRO_BITMAP* Monster::getImgInStoreHover() const {
+    auto it = s_store_hover_map.find(type);
+    if(it != s_store_hover_map.end() && it->second != nullptr) {
+        return it->second;
+    }
+    // Fallback to regular store image if hover not available
+    return getImgInStore();
+}
 ALLEGRO_BITMAP* Monster::getImgInPfp() const {
     auto it = s_pfp_map.find(type);
     return (it == s_pfp_map.end()) ? nullptr : it->second;
+}
+ALLEGRO_BITMAP* Monster::getImgInPfpHover() const {
+    auto it = s_pfp_hover_map.find(type);
+    if(it != s_pfp_hover_map.end() && it->second != nullptr) {
+        return it->second;
+    }
+    // Fallback to regular pfp image if hover not available
+    return getImgInPfp();
 }
 
 void Monster::init(){
@@ -97,15 +130,14 @@ void Monster::update(){
         case HABITAT:{
             status = WALK;
 
-            if(x+dx<(int)its_habitat.leftmost()-50|| x+width+dx>(int)its_habitat.rightmost()+50){
+            if(x+dx<(int)its_habitat.leftmost()-50|| x+width+dx>(int)its_habitat.rightmost()){
                 dx = -dx;
                 direction = !direction;
             }
 
-            if(y+length+dy>(int)its_habitat.downmost()+50|| y+dy<(int)its_habitat.upmost()-50){
+            if(y+length+dy>(int)its_habitat.downmost()+50|| y+dy<(int)its_habitat.upmost()){
                 dy = -dy;
             }
-
             x += dx;
             y += dy;
             
@@ -158,5 +190,5 @@ void Monster::draw(){
         }
     }
 
-    al_draw_rectangle(x, y, x+width, y+length, al_map_rgb(255,0,0),2);
+    // al_draw_rectangle(x, y, x+width, y+length, al_map_rgb(255,0,0),2);
 }

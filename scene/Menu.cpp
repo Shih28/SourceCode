@@ -22,9 +22,19 @@ static std::string getButtonImage(const std::string& basePath, bool hovering) {
     return basePath;
 }
 
+const int MOVEMENT_SPEED = 4;
+const int START_X_POS_FOR_MENU = 800;
+const int START_Y_POS_FOR_MENU = 330;
+const int BG_RIGHT_END = 1800;
+const int BG_DOWN_END = 1100;
 
 void Menu::init(){
+    return;
+}
 
+void Menu::veryInit(){
+    x = START_X_POS_FOR_MENU;
+    y = START_Y_POS_FOR_MENU;
     return;
 }
 
@@ -51,6 +61,80 @@ void Menu::update(){
     }else if(pfp_pt.overlap(DC->mouse, 90) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
         pl->setrequest(Game::STATE::PROFILE);
     }
+
+    auto &fec = pl->getFacilities();
+    auto &mons = pl->getMonsters();
+    //menu bg manipulation 
+    if(DC->key_state[ALLEGRO_KEY_S]){
+        y += MOVEMENT_SPEED;
+        if(y>BG_DOWN_END){
+            y = BG_DOWN_END;
+        }else{
+            for(auto &f: fec){
+                f.getY() -= MOVEMENT_SPEED;
+                for(int i=0; i<2; i++){
+                    if(f.getHaveMonsters(i)){
+                        auto &m = mons[f.getMonsterIndex(i)];
+                        m.setFacilityRec(Rectangle(f.getX(), f.getY(), 
+                        f.getX()+f.width, f.getY()+f.length));
+                        m.getY() -= MOVEMENT_SPEED;
+                    }
+                }
+            }
+
+        }
+    }else if(DC->key_state[ALLEGRO_KEY_W]){
+        y -= MOVEMENT_SPEED;
+        if(y<0){
+            y=0;
+        }else{
+            for(auto &f: fec){
+                f.getY() += MOVEMENT_SPEED;
+                for(int i=0; i<2; i++){
+                    if(f.getHaveMonsters(i)){
+                        auto &m = mons[f.getMonsterIndex(i)];
+                        m.setFacilityRec(Rectangle(f.getX(), f.getY(), 
+                        f.getX()+f.width, f.getY()+f.length));
+                        m.getY() += MOVEMENT_SPEED;
+                    }
+                }
+            }
+        }
+    }else if(DC->key_state[ALLEGRO_KEY_D]){
+        x += MOVEMENT_SPEED;
+        if(x<0){
+            x=0;
+        }else{
+            for(auto &f: fec){
+                f.getX() -= MOVEMENT_SPEED;
+                for(int i=0; i<2; i++){
+                    if(f.getHaveMonsters(i)){
+                        auto &m = mons[f.getMonsterIndex(i)];
+                        m.setFacilityRec(Rectangle(f.getX(), f.getY(), 
+                        f.getX()+f.width, f.getY()+f.length));
+                        m.getX() -= MOVEMENT_SPEED;
+                    }
+                }
+            }
+        }
+    }else if(DC->key_state[ALLEGRO_KEY_A]){
+        x -= MOVEMENT_SPEED;
+        if(x>BG_RIGHT_END){
+            x=BG_RIGHT_END;
+        }else{
+            for(auto &f: fec){
+                f.getX() += MOVEMENT_SPEED;
+                for(int i=0; i<2; i++){
+                    if(f.getHaveMonsters(i)){
+                        auto &m = mons[f.getMonsterIndex(i)];
+                        m.setFacilityRec(Rectangle(f.getX(), f.getY(), 
+                        f.getX()+f.width, f.getY()+f.length));
+                        m.getX() += MOVEMENT_SPEED;
+                    }
+                }
+            }
+        }
+    }
 }
 
 void Menu::draw(){
@@ -60,7 +144,8 @@ void Menu::draw(){
     
     //background
     auto bg = IC->get("./assets/image/scene/menu.png");
-    al_draw_bitmap(bg, 0, 0, 0);
+    al_draw_bitmap_region(bg, x, y, 1280, 720, 0, 0, 0);
+    // al_draw_bitmap(bg, 0, 0, 0);
 
     //facilities
     for(auto &f: pl->getFacilities()){

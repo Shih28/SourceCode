@@ -11,10 +11,6 @@ class Store: public Scene{
         
         enum STATE_S{
             ALL,
-            FIRE,
-            WATER,
-            WIND,
-            LIGHTNING,
             PUR_NOTI
         };
 
@@ -35,11 +31,9 @@ class Store: public Scene{
         }
 
     private:
-    void updateMonstersInDisplay();
     STATE_S state, pre_state;
     NOTI_S noti;
     int noti_cnt;
-    int monsters_in_display_idx[4];
         
 };
 

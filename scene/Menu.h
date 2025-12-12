@@ -12,12 +12,18 @@ class Menu: public Scene{
         void draw();
         void end();
 
+        void veryInit();
         static Menu* get(){
             static Menu MS;
             return &MS;
         }
 
+    private:
+        int x, y;
+
 
 };
+
+    
 
 #endif

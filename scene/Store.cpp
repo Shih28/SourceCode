@@ -12,7 +12,7 @@
 #include <vector>
 
 int Store::page = 0;
-const int MAX_NUM = 4;
+const int MAX_NUM = 8;
 
 // Helper function to get button image with hover effect
 static std::string getButtonImage(const std::string& basePath, bool hovering) {
@@ -26,21 +26,33 @@ static std::string getButtonImage(const std::string& basePath, bool hovering) {
 
 // Screen and monster dimensions
 const int SCREEN_WIDTH = 1280;
-const int WIDTH = 80;
-const int HEIGHT = 150;
+const int SCREEN_HEIGHT = 720;
+const int WIDTH = 213;
+const int HEIGHT = 230;
 
-// Calculate evenly spaced positions for 4 monsters in a single row
-const int HORIZONTAL_SPACING = 260;  // Space between each monster
-const int GRID_WIDTH = (MAX_NUM - 1) * HORIZONTAL_SPACING + WIDTH;
+// Calculate evenly spaced positions for 4x2 grid (4 monsters per row, 2 rows)
+const int COLS = 4;
+const int ROWS = 2;
+const int HORIZONTAL_SPACING = 250;  // Space between each monster horizontally
+const int VERTICAL_SPACING = 260;     // Space between rows
+const int GRID_WIDTH = (COLS - 1) * HORIZONTAL_SPACING + WIDTH;
+const int GRID_HEIGHT = (ROWS - 1) * VERTICAL_SPACING + HEIGHT;
 const int START_X = (SCREEN_WIDTH - GRID_WIDTH) / 2;
-const int Y_POSITION = 300;
+const int START_Y = (SCREEN_HEIGHT - GRID_HEIGHT) / 2;
 
-// Generate positions using math instead of hardcoding
-const std::pair<int, int> MONS_POS[4] = {
-    {START_X + 0 * HORIZONTAL_SPACING, Y_POSITION},
-    {START_X + 1 * HORIZONTAL_SPACING, Y_POSITION},
-    {START_X + 2 * HORIZONTAL_SPACING, Y_POSITION},
-    {START_X + 3 * HORIZONTAL_SPACING, Y_POSITION}
+// Generate 4x2 grid positions using math
+const std::pair<int, int> MONS_POS[] = {
+    // Row 1
+    {START_X + 0 * HORIZONTAL_SPACING, START_Y + 0 * VERTICAL_SPACING},
+    {START_X + 1 * HORIZONTAL_SPACING, START_Y + 0 * VERTICAL_SPACING},
+    {START_X + 2 * HORIZONTAL_SPACING, START_Y + 0 * VERTICAL_SPACING},
+    {START_X + 3 * HORIZONTAL_SPACING, START_Y + 0 * VERTICAL_SPACING},
+    
+    // Row 2
+    {START_X + 0 * HORIZONTAL_SPACING, START_Y + 1 * VERTICAL_SPACING},
+    {START_X + 1 * HORIZONTAL_SPACING, START_Y + 1 * VERTICAL_SPACING},
+    {START_X + 2 * HORIZONTAL_SPACING, START_Y + 1 * VERTICAL_SPACING},
+    {START_X + 3 * HORIZONTAL_SPACING, START_Y + 1 * VERTICAL_SPACING}
 };
 
 void Store::init(){
@@ -52,9 +64,9 @@ void Store::init(){
 void Store::update(){
     auto pl = Player::getPlayer();
     auto DC = DataCenter::get_instance();
-    updateMonstersInDisplay();
+    
     //exit
-    if(Point(1100, 10).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+    if(Point(1142, 47).overlap(DC->mouse, 38) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
         pl->setrequest(Game::STATE::MENU);
 
         //owned monsters update
@@ -72,11 +84,8 @@ void Store::update(){
             MONS_POS[i].first+WIDTH, MONS_POS[i].second+HEIGHT).overlap(DC->mouse)
             && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
 
-                int libIdx = monsters_in_display_idx[i];
-                if(libIdx < 0 || libIdx >= (int)lib.size()){
-                    continue;
-                }
-                auto &mask = lib[libIdx];
+                
+                auto &mask = lib[i*2];
                 int &coin = pl->getCoin();
 
                 if(coin >= mask.getPrice()){
@@ -117,7 +126,7 @@ void Store::draw(){
     al_draw_bitmap(bg, 0, 0, 0);
 
     //exit
-    bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+    bool exitHover = Point(1142, 47).overlap(DC->mouse, 38);
     auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
     al_draw_bitmap(exit, 1100, 10, 0);
 
@@ -125,67 +134,19 @@ void Store::draw(){
     switch (state){
     case ALL:{
         debug_log("lib size: %d\n", lib.size());
-        // draw up to MAX_NUM items on the current page and populate display index mapping
-        int start = page * MAX_NUM;
-        for(int slot = 0; slot < MAX_NUM; slot+=2){
-            int libIdx = start + slot;
-            if(libIdx >= (int)lib.size()){
-                monsters_in_display_idx[slot] = -1;
-                continue;
-            }
-            monsters_in_display_idx[slot] = libIdx;
-            auto img = lib[libIdx].getImgInStore();
-            if(img) al_draw_bitmap(img, MONS_POS[slot].first, MONS_POS[slot].second, 0);
-            al_draw_rectangle(MONS_POS[slot].first, MONS_POS[slot].second,
-                MONS_POS[slot].first+WIDTH, MONS_POS[slot].second+HEIGHT, al_map_rgb(255,0,0), 2);
-        }
-        break;
-    }
-    case FIRE:{
-        page=0;
-        int i=0;
-        for(auto &m: lib){
-            if(m.getSpecies()==Monster::SPECIES_M::FIRE){
-                auto img = m.getImgInStore();
-                if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
-                i++;
-            }
-        }
-        break;
-    }
-    case WATER:{
-        page=0;
-        int i=0;
-        for(auto &m: lib){
-            if(m.getSpecies()==Monster::SPECIES_M::WATER){
-                auto img = m.getImgInStore();
-                if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
-                i++;
-            }
-        }
-        break;
-    }
-    case WIND:{
-        page=0;
-        int i=0;
-        for(auto &m: lib){
-            if(m.getSpecies()==Monster::SPECIES_M::WIND){
-                auto img = m.getImgInStore();
-                if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
-                i++;
-            }
-        }
-        break;
-    }
-    case LIGHTNING:{
-        page=0;
-        int i=0;
-        for(auto &m: lib){
-            if(m.getSpecies()==Monster::SPECIES_M::LIGHTNING){
-                auto img = m.getImgInStore();
-                if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
-                i++;
-            }
+        // draw up to MAX_NUM items (4x2 grid = 8 monsters)
+        
+        for(int i = 0; i < MAX_NUM && i < lib.size()/2; i++){
+            
+            // Check if mouse is hovering over this monster
+            bool monsterHover = Rectangle(MONS_POS[i].first, MONS_POS[i].second,
+                MONS_POS[i].first+WIDTH, MONS_POS[i].second+HEIGHT).overlap(DC->mouse);
+            
+            auto img = monsterHover ? lib[i*2].getImgInStoreHover() : lib[i*2].getImgInStore();
+            if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
+
+            // al_draw_rectangle(MONS_POS[i].first, MONS_POS[i].second,
+            //     MONS_POS[i].first+WIDTH, MONS_POS[i].second+HEIGHT, al_map_rgb(255,0,0), 2);
         }
         break;
     }
@@ -197,29 +158,13 @@ void Store::draw(){
             al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(255,255,255), 640, 360, ALLEGRO_ALIGN_CENTRE, str.c_str());
         break;
     }
-    
-    
     }
 
     //hitboxes
-    al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
+    // al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
 
 }
 
 void Store::end(){
 
-}
-
-void Store::updateMonstersInDisplay(){
-    auto *pl = Player::getPlayer();
-    auto &lib = pl->getAllMonsters(); // reference to real container
-
-    // reset indices
-    for(int k=0; k<MAX_NUM; ++k) monsters_in_display_idx[k] = -1;
-
-    int start = page * MAX_NUM;
-    int j = 0;
-    for(int i = start; i < lib.size() && j < MAX_NUM; ++i, ++j){
-        monsters_in_display_idx[j] = i;
-    }
 }

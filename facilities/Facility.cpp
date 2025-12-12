@@ -62,7 +62,7 @@ void Facility::draw(){
     ALLEGRO_BITMAP* img = IC->get(img_path);
     // debug_log("<Facility> start drawing\n");
     al_draw_bitmap(img, x, y, 0); 
-    al_draw_rectangle(x, y+50, x+width, y+50+length, al_map_rgb(255, 0, 0), 2);
+    // al_draw_rectangle(x, y+50, x+width, y+50+length, al_map_rgb(255, 0, 0), 2);
 
     //for farms
     if(status==WORKING && type==FARM){
@@ -73,20 +73,20 @@ void Facility::draw(){
         double w = scale*BAR_LENGTH;
 
         // debug_log("w: %lf\n", w);
-        al_draw_bitmap(blue_bar, x, y+length, 0);
-        al_draw_bitmap_region(yellow_bar, 0, 0, w, 100, x, y+length, 0);
+        al_draw_bitmap(blue_bar, x+20, y+length, 0);
+        al_draw_bitmap_region(yellow_bar, 0, 0, w, 100, x+20, y+length, 0);
 
     }else if(status==DONE && type==FARM){
         auto berries = IC->get(BERRY_IMG);
         al_draw_bitmap(berries, x+width/2, y-15, 0);
-        al_draw_rectangle(x+width/2, y-15, x+width, y, al_map_rgb(255, 0, 0), 2);
+        // al_draw_rectangle(x+width/2, y-15, x+width, y, al_map_rgb(255, 0, 0), 2);
     }
 
     //for habitats
     if(status==DONE && type!=FARM){
         auto coin = IC->get(COIN_IMG);
-        al_draw_bitmap(coin, x+width/2, y-15, 0);
-        al_draw_rectangle(x+width/2, y-15, x+width, y, al_map_rgb(255, 0, 0), 2);
+        al_draw_bitmap(coin, x+width/2-20, y-30, 0);
+        // al_draw_rectangle(x+width/2, y-15, x+width, y, al_map_rgb(255, 0, 0), 2);
     }
 
     //draw invalid message

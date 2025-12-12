@@ -37,8 +37,35 @@ const MonsterConfig MONSTER_CONFIGS[] = {
         2500,
         "./assets/image/monsters/fire/BadGyaumal/2",
         9, 9, 9
+    },
+    {
+        Monster::FREETTLE_BABY,
+        Monster::FIRE,
+        1000,
+        "./assets/image/monsters/fire/Freettle/1",
+        9, 9, 9
+    },
+    {
+        Monster::FREETTLE_ADAULT,
+        Monster::FIRE,
+        1000,
+        "./assets/image/monsters/fire/Freettle/2",
+        9, 9, 9
+    },
+    {
+        Monster::VIRELIA_BABY,
+        Monster::WIND,
+        2300,
+        "./assets/image/monsters/wind/Virelia/1",
+        9, 9, 9
+    },
+    {
+        Monster::VIRELIA_ADAULT,
+        Monster::WIND,
+        2300,
+        "./assets/image/monsters/wind/Virelia/2",
+        9, 9, 9
     }
-    // Add more monsters here easily!
 };
 
 const int MAX_TYPE_OF_MONSTERS = sizeof(MONSTER_CONFIGS) / sizeof(MonsterConfig);
@@ -61,13 +88,14 @@ const std::tuple<int, int, int, int> FOOD_DET[] = {
 
 
 const std::pair<int, int> LAND_POS[8] = {
-    {50, 120},
-    {380, 120},
-    {710, 120},
-    {1040, 120},
+    {100, 165},
+    {420, 145},
+    {750, 135},
+    {1060, 165},
+
     {50, 400},
-    {380, 400},
-    {710, 400},
+    {380, 470},
+    {710, 475},
     {1040, 400}
 };
 
@@ -130,8 +158,8 @@ void Player::load(){
     }
 
     //coins and berries
-    coin = 5000;
-    berries = 1000;
+    coin = 10000;
+    berries = 4000;
 
     loadAllMonsters();
     loadAllFoods();

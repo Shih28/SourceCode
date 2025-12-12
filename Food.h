@@ -14,9 +14,9 @@ class Food{
     public:
         static const int MAX_TYPE = 4;
         static int i;
-        static const int  width = 100, length = 100;
+        static const int  width = 325, length = 220;
         void init();
-        void draw();
+        void draw(bool hover);
         void update();
         
         
@@ -67,6 +67,7 @@ class Food{
         
         //shared map
         static std::unordered_map<TYPE_F, ALLEGRO_BITMAP*> img_path;
+        static std::unordered_map<TYPE_F, ALLEGRO_BITMAP*> img_path_hover;
 };
 
 

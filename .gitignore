@@ -3,6 +3,7 @@ doxy_file
 *.pseuodo
 *.o
 *.exe
+game
 *.log
 !allegro_monolith-5.2.dll
 !allegro_monolith-debug-5.2.dll

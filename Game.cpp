@@ -144,7 +144,7 @@ Game::game_init() {
 	DC->player->load();
 	
 	//scene init
-	Menu::get()->init();
+	Menu::get()->veryInit();
 	LevelMenu::getInstance()->init();
 
 	// game start
@@ -177,10 +177,12 @@ Game::game_update() {
 		case STATE::START: {
 			static bool is_played = false;
 			static ALLEGRO_SAMPLE_INSTANCE *instance = nullptr;
-			if(!is_played) {
-				instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
-				is_played = true;
-			}
+			
+			//comented temporary 
+			// if(!is_played) {
+			// 	instance = SC->play(game_start_sound_path, ALLEGRO_PLAYMODE_ONCE);
+			// 	is_played = true;
+			// }
 
 			// if(!SC->is_playing(instance)) {
 			// 	debug_log("<Game> state: change to MENU from START\n");
@@ -197,10 +199,12 @@ Game::game_update() {
 		
 		case STATE::MENU: {
 			static bool BGM_played = false;
-			if(!BGM_played) {
-				background = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
-				BGM_played = true;
-			}
+
+			//commented temporary
+			// if(!BGM_played) {
+			// 	background = SC->play(background_sound_path, ALLEGRO_PLAYMODE_LOOP);
+			// 	BGM_played = true;
+			// }
 
 			// debug_log("<Game> state: MENU\n");
 

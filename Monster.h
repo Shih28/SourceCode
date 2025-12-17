@@ -58,7 +58,11 @@ class Monster{
         enum TYPE_M{
             UNDEFINED,
             BAD_GYAUMAL_BABY,
-            BAD_GYAUMAL_ADAULT
+            BAD_GYAUMAL_ADAULT,
+            FREETTLE_BABY,
+            FREETTLE_ADAULT,
+            VIRELIA_BABY,
+            VIRELIA_ADAULT
             //to be added
         };
 
@@ -92,8 +96,10 @@ class Monster{
             exp += 100;
         }
 
-        int getExp(){ return exp;}
-        int getLevel(){ return level;}
+        int& getExp(){ return exp;}
+        int& getLevel(){ return level;}
+        int& getX(){ return x;}
+        int& getY(){ return y;}
         
         PLACE_M getPlacing(){ return place;}
         STATUS_M getStatus(){ return status;}
@@ -118,7 +124,9 @@ class Monster{
         ALLEGRO_BITMAP* getDefFrame(int frame) const;
         ALLEGRO_BITMAP* getHappyFrame(int frame) const;
         ALLEGRO_BITMAP* getImgInStore() const;
+        ALLEGRO_BITMAP* getImgInStoreHover() const;
         ALLEGRO_BITMAP* getImgInPfp() const;
+        ALLEGRO_BITMAP* getImgInPfpHover() const;
 
     private:
         int id, level, exp;
@@ -145,7 +153,9 @@ class Monster{
         static std::unordered_map<TYPE_M, std::vector<ALLEGRO_BITMAP*>> s_def_map;
         static std::unordered_map<TYPE_M, std::vector<ALLEGRO_BITMAP*>> s_happy_map;
         static std::unordered_map<TYPE_M, ALLEGRO_BITMAP*> s_store_map;
+        static std::unordered_map<TYPE_M, ALLEGRO_BITMAP*> s_store_hover_map;
         static std::unordered_map<TYPE_M, ALLEGRO_BITMAP*> s_pfp_map;
+        static std::unordered_map<TYPE_M, ALLEGRO_BITMAP*> s_pfp_hover_map;
 };
 
 

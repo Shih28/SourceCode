@@ -16,17 +16,17 @@ const int MONSTER_WIDTH = 80;
 const int MONSTER_HEIGHT = 150;
 
 // Grid layout configuration
-const int MONSTERS_PER_ROW = 4;
+const int MONSTERS_PER_ROW = 3;
 const int MAX_ROWS = 2;
 const int MAX_MONSTERS_DISPLAYED = MONSTERS_PER_ROW * MAX_ROWS;
 
 // Calculate spacing and margins for centered grid
-const int HORIZONTAL_SPACING = 220;  // Space between monsters horizontally
+const int HORIZONTAL_SPACING = 250;  // Space between monsters horizontally
 const int VERTICAL_SPACING = 200;    // Space between monsters vertically
 const int GRID_WIDTH = (MONSTERS_PER_ROW - 1) * HORIZONTAL_SPACING + MONSTER_WIDTH;
 const int GRID_HEIGHT = (MAX_ROWS - 1) * VERTICAL_SPACING + MONSTER_HEIGHT;
-const int START_X = (SCREEN_WIDTH - GRID_WIDTH) / 2;
-const int START_Y = (SCREEN_HEIGHT - GRID_HEIGHT) / 2 + 20;  // Slightly below center
+const int START_X = (SCREEN_WIDTH - GRID_WIDTH) / 2  - 60;
+const int START_Y = (SCREEN_HEIGHT - GRID_HEIGHT) / 2 - 20 ;  // Slightly below center
 
 // Function to calculate monster position based on index
 std::pair<int, int> getMonsterPosition(int index) {
@@ -55,7 +55,7 @@ void Profile::update(){
     auto pl = Player::getPlayer();
     auto DC = DataCenter::get_instance();
     //exit  
-    if(Point(1100, 10).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+    if(Point(1142, 47).overlap(DC->mouse, 38) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
         pl->setrequest(Game::STATE::MENU);
     }
 }
@@ -86,12 +86,12 @@ void Profile::draw(){
     }
 
     //exit
-    bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+    bool exitHover = Point(1142, 47).overlap(DC->mouse, 38);
     auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
     al_draw_bitmap(exit, 1100, 10, 0);
 
     //hitboxes
-    al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
+    // al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
 }
 void Profile::end(){
     

@@ -15,37 +15,43 @@
 // Screen and element dimensions
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;
-const int WIDTH = 80;
-const int HEIGHT = 150;
+const int WIDTH = 213;
+const int HEIGHT = 234;
 
-// Monster selection positions (4 monsters in a row, horizontally centered)
-const int MONS_SPACING = 260;
-const int MONS_GRID_WIDTH = 3 * MONS_SPACING + WIDTH;
-const int MONS_START_X = (SCREEN_WIDTH - MONS_GRID_WIDTH) / 2;
-const int MONS_Y = 300;
+// Monster selection positions (3 monsters in a row, horizontally centered)
+const int MONS_SPACING = 250;
+const int MONS_VERTICAL_SPACING = 260;
+const int MONS_GRID_WIDTH = 2 * MONS_SPACING + WIDTH;
+const int MONS_START_X = (SCREEN_WIDTH - MONS_GRID_WIDTH) / 2 + 10;
+const int MONS_Y = 100;
 
-const std::pair<int, int> MONS_POS[4] = {
+
+const std::pair<int, int> MONS_POS[6] = {
     {MONS_START_X + 0 * MONS_SPACING, MONS_Y},
     {MONS_START_X + 1 * MONS_SPACING, MONS_Y},
     {MONS_START_X + 2 * MONS_SPACING, MONS_Y},
-    {MONS_START_X + 3 * MONS_SPACING, MONS_Y}
+    
+    {MONS_START_X + 0 * MONS_SPACING, MONS_Y+MONS_VERTICAL_SPACING},
+    {MONS_START_X + 1 * MONS_SPACING, MONS_Y+MONS_VERTICAL_SPACING},
+    {MONS_START_X + 2 * MONS_SPACING, MONS_Y+MONS_VERTICAL_SPACING}
+
 };
 
 // Feeding menu positions (2 monsters, evenly spaced)
 const int FEED_SPACING = 500;
 const int FEED_START_X = (SCREEN_WIDTH - FEED_SPACING) / 2;
-const int FEED_Y = 400;
+const int FEED_Y = 300;
 
 const std::pair<int, int> MONS_POS_FEED_MENU[] = {
-    {FEED_START_X-100, FEED_Y},
-    {FEED_START_X-20 + FEED_SPACING, FEED_Y}
+    {FEED_START_X-190, FEED_Y},
+    {FEED_START_X-15 + FEED_SPACING, FEED_Y}
 };
 
 // Food display positions (2x2 grid, centered)
-const int FOOD_H_SPACING = 640;  // Horizontal spacing between columns
-const int FOOD_V_SPACING = 200;  // Vertical spacing between rows
-const int FOOD_START_X = 320;
-const int FOOD_START_Y = 300;
+const int FOOD_H_SPACING = 480;  // Horizontal spacing between columns
+const int FOOD_V_SPACING = 280;  // Vertical spacing between rows
+const int FOOD_START_X = 265;
+const int FOOD_START_Y = 120;
 
 const std::pair<int, int> FOOD_DISPLAY_POS[] = {
     {FOOD_START_X, FOOD_START_Y},                           // Top-left
@@ -56,8 +62,8 @@ const std::pair<int, int> FOOD_DISPLAY_POS[] = {
 
 // Feed button positions (aligned with feeding positions)
 const std::pair<int, int> FEED_BUTTON[] = {
-    {FEED_START_X, 600},
-    {FEED_START_X + FEED_SPACING, 600}
+    {FEED_START_X-150, 650},
+    {FEED_START_X + FEED_SPACING, 650}
 };
 
 const int BAR_LENGTH = 200;
@@ -117,7 +123,7 @@ void Farm::update(){
             page = 0;
             int &coin = pl->getCoin();
             //farm
-           if(Rectangle(50, 350, 200, 500).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+           if(Rectangle(300, 100, 570, 350).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
             if(coin < 1000){
                 noti = PUR_FAIL;
             }else{
@@ -129,7 +135,7 @@ void Farm::update(){
             pre_state = LAND_SETTING;
             state = PUR_NOTI;
            }//fire
-           else if(Rectangle(250, 350, 400, 500).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+           else if(Rectangle(100, 400, 370, 610).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 if(coin < 1000){
                     noti = PUR_FAIL;
                 }else{
@@ -141,7 +147,7 @@ void Farm::update(){
                 pre_state = LAND_SETTING;
                 state = PUR_NOTI;
            }//water
-           else if(Rectangle(500, 350, 650, 500).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+           else if(Rectangle(500, 400, 770, 610).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 if(coin < 1000){
                     noti = PUR_FAIL;
                 }else{
@@ -153,7 +159,7 @@ void Farm::update(){
                 pre_state = LAND_SETTING;
                 state = PUR_NOTI;
            }//wind
-           else if(Rectangle(750, 350, 900, 500).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+           else if(Rectangle(700, 100, 970, 350).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 if(coin < 1500){
                     noti = PUR_FAIL;
                 }else{
@@ -165,7 +171,7 @@ void Farm::update(){
                 pre_state = LAND_SETTING;
                 state = PUR_NOTI;
            }//lightning
-           else if(Rectangle(1000, 350, 1150, 500).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+           else if(Rectangle(900, 400, 1170, 610).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 if(coin < 2000){
                     noti = PUR_FAIL;
                 }else{
@@ -177,7 +183,7 @@ void Farm::update(){
                 pre_state = LAND_SETTING;
                 state = PUR_NOTI;
            }//exit
-           else if(Point(1100, 10).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+           else if(Point(1142, 47).overlap(DC->mouse, 38) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 pl->setrequest(Game::STATE::MENU);
            }
             break;
@@ -194,7 +200,7 @@ void Farm::update(){
            int &berries = pl->getBer();
 
             //exit
-           if(Point(1100, 10).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+           if(Point(1142, 47).overlap(DC->mouse, 38) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 pl->setrequest(Game::STATE::MENU);
 
                 // mark facility monsters as HABITAT by modifying the player-owned monsters
@@ -207,14 +213,14 @@ void Farm::update(){
                     }
                 }
            }//add monsters if slot empty
-           else if(Point(500, 400).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+           else if(Point(340, 420).overlap(DC->mouse, 62) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 if(!acessFac.getHaveMonsters(0)){
                     pl->setAcessFacIdx(0);
                     state = HABITAT_MONSTERS;
                 }
            }
            //add monsters if slot empty
-           else if(Point(800, 400).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+           else if(Point(970, 420).overlap(DC->mouse, 62) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 if(!acessFac.getHaveMonsters(1)){
                     pl->setAcessFacIdx(1);
                     state = HABITAT_MONSTERS;
@@ -258,7 +264,7 @@ void Farm::update(){
 
             updateMonstersInDisplay();
             //exit
-            if(Point(1100, 10).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+            if(Point(1142, 47).overlap(DC->mouse, 38) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 pl->setrequest(Game::STATE::MENU);
 
                 for(int i=0; i<2; i++){
@@ -270,7 +276,7 @@ void Farm::update(){
                     }
                 }
             }//more monsters button
-            else if(Rectangle(500, 450, 700, 600).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+            else if(Rectangle(540, 630, 750, 720).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 pl->setrequest(Game::STATE::STORE);
             }
 
@@ -302,10 +308,10 @@ void Farm::update(){
         }
         case FARM_MAIN:{
             //exit
-            if(Point(1100, 10).overlap(DC->mouse, 40) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+            if(Point(1142, 47).overlap(DC->mouse, 38) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
                 pl->setrequest(Game::STATE::MENU);
             } //level up button
-            else if(Rectangle(500, 450, 700, 600).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1] && acessFac.getLevel()<3){
+            else if(Rectangle(550, 630, 785, 700).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1] && acessFac.getLevel()<3){
                 auto & coin = pl->getCoin();
                 if(acessFac.getLevel()==1){
                     if(coin < 1500){
@@ -327,6 +333,7 @@ void Farm::update(){
                 pre_state = FARM_MAIN;
                 state = PUR_NOTI;
             }
+
             //food buttons
             for(int i=0; i<MAX_ELE_PER_PAGE; i++){
 
@@ -360,7 +367,7 @@ void Farm::update(){
             break;
         }
         case PUR_NOTI:{
-            if(pur_noti_cnt<=60){
+            if(pur_noti_cnt<=30){
                 pur_noti_cnt++;
             }else{
                 pur_noti_cnt = 0;
@@ -394,39 +401,48 @@ void Farm::draw(){
     switch (state){
         case LAND_SETTING:{
 
-            LAND_SETTING_GOTO:
-
             bg_path = "./assets/image/scene/buildings.png";
 
             al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
+
             //farm
-            auto farm = IC->get("./assets/image/store/farm.png");
-            al_draw_bitmap(farm, 50, 350, 0);
-
+            bool farmHover = Rectangle(300, 100, 570, 350).overlap(DC->mouse);
+            auto farm = IC->get(getButtonImage("./assets/image/store/farm.png", farmHover));
+            
             //habitats
-            auto fire = IC->get("./assets/image/store/fire_hab.png");
-            auto water = IC->get("./assets/image/store/water_hab.png");
-            auto wind = IC->get("./assets/image/store/wind_hab.png");
-            auto lightning = IC->get("./assets/image/store/lightning_hab.png");
+            bool fireHover = Rectangle(100, 400, 370, 610).overlap(DC->mouse);
+            auto fire = IC->get(getButtonImage("./assets/image/store/fire_hab.png", fireHover));
+            
+            bool waterHover = Rectangle(500, 400, 770, 610).overlap(DC->mouse);
+            auto water = IC->get(getButtonImage("./assets/image/store/water_hab.png", waterHover));
+            
+            bool windHover = Rectangle(700, 100, 970, 350).overlap(DC->mouse);
+            auto wind = IC->get(getButtonImage("./assets/image/store/wind_hab.png", windHover));
+            
+            bool lightningHover = Rectangle(900, 400, 1170, 610).overlap(DC->mouse);
+            auto lightning = IC->get(getButtonImage("./assets/image/store/lightning_hab.png", lightningHover));
 
-            al_draw_bitmap(fire, 250, 350, 0);
-            al_draw_bitmap(water, 500, 350, 0);
-            al_draw_bitmap(wind, 750, 350, 0);
-            al_draw_bitmap(lightning, 1000, 350, 0);
+            al_draw_bitmap(fire, 100, 400, 0);
+            al_draw_bitmap(water, 500, 400, 0);
+            al_draw_bitmap(lightning, 900, 400, 0);
+
+            al_draw_bitmap(wind, 700, 100, 0);
+            al_draw_bitmap(farm, 300, 100, 0);
 
             //exit
-            bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+            bool exitHover = Point(1142, 47).overlap(DC->mouse, 38);
             auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
             al_draw_bitmap(exit, 1100, 10, 0);
 
 
             //hitboxes
-            al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2); //exit
-            al_draw_rectangle(50, 350, 200, 500, al_map_rgb(255,0,0), 2); //farm 
-            al_draw_rectangle(250, 350, 400, 500, al_map_rgb(255,0,0), 2); //fire
-            al_draw_rectangle(500, 350, 650, 500, al_map_rgb(255,0,0), 2); //water
-            al_draw_rectangle(750, 350, 900, 500, al_map_rgb(255,0,0), 2); //wind
-            al_draw_rectangle(1000, 350, 1150, 500, al_map_rgb(255,0,0), 2); //lightning
+            // al_draw_circle(1142, 47, 38, al_map_rgb(255,0,0), 2); //exit
+            // al_draw_rectangle(700, 100, 970, 350, al_map_rgb(255,0,0), 2); //wind
+            // al_draw_rectangle(300, 100, 570, 350, al_map_rgb(255,0,0), 2); //farm 
+
+            // al_draw_rectangle(100, 400, 370, 610, al_map_rgb(255,0,0), 2); //fire
+            // al_draw_rectangle(500, 400, 770, 610, al_map_rgb(255,0,0), 2); //water
+            // al_draw_rectangle(900, 400, 1170, 610, al_map_rgb(255,0,0), 2); //lightning
             
 
             break;
@@ -437,26 +453,25 @@ void Farm::draw(){
             al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
 
             //exit
-            bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+            bool exitHover = Point(1142, 47).overlap(DC->mouse, 38);
             auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
             al_draw_bitmap(exit, 1100, 10, 0);
 
             //add button
             if(!acessFac.getHaveMonsters(0)) {
-                bool add1Hover = Point(500, 400).overlap(DC->mouse, 40);
+                bool add1Hover = Point(340, 420).overlap(DC->mouse, 62);
                 auto add1 = IC->get(getButtonImage("./assets/image/littleStuff/add.png", add1Hover));
-                al_draw_bitmap(add1, 500, 400, 0);
+                al_draw_bitmap(add1, 270, 350, 0);
             }
             if(!acessFac.getHaveMonsters(1)) {
-                bool add2Hover = Point(800, 400).overlap(DC->mouse, 40);
+                bool add2Hover = Point(970, 420).overlap(DC->mouse, 62);
                 auto add2 = IC->get(getButtonImage("./assets/image/littleStuff/add.png", add2Hover));
-                al_draw_bitmap(add2, 800, 400, 0);
+                al_draw_bitmap(add2, 900, 350, 0);
             }
             
             //hitboxes
-            al_draw_circle(1110, 30, 40, al_map_rgb(255,0,0), 2);
-            al_draw_circle(500, 400, 40, al_map_rgb(255,0,0), 2);
-            al_draw_circle(800, 400, 40, al_map_rgb(255,0,0), 2);
+            // al_draw_circle(340, 420, 62, al_map_rgb(255,0,0), 2);
+            // al_draw_circle(970, 420, 62, al_map_rgb(255,0,0), 2);
 
             //monster in hab
             for(int i=0; i<2; i++){
@@ -472,13 +487,16 @@ void Farm::draw(){
             auto berry = IC->get("./assets/image/littleStuff/berry_bar.png");
             al_draw_bitmap(berry, 50, 5, 0);
             std::string b = std::to_string(pl->getBer());
-            al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 120, 17, ALLEGRO_ALIGN_CENTRE, b.c_str());
+            al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 200, 18, ALLEGRO_ALIGN_CENTRE, b.c_str());
 
+            //feed
             for(int i=0; i<2; i++){
                 if(acessFac.getHaveMonsters(i) && pl->getMonsters()[acessFac.getMonsterIndex(i)].getLevel()<=2){
                     auto feedBut = IC->get("./assets/image/littleStuff/b100.png");
                     al_draw_bitmap(feedBut, FEED_BUTTON[i].first, FEED_BUTTON[i].second, 0);
-                    al_draw_rectangle(FEED_BUTTON[i].first, FEED_BUTTON[i].second, FEED_BUTTON[i].first+150, FEED_BUTTON[i].second+80, al_map_rgb(255,0,0), 2);
+                    
+                    // al_draw_rectangle(FEED_BUTTON[i].first, FEED_BUTTON[i].second,
+                        // FEED_BUTTON[i].first+200, FEED_BUTTON[i].second+60, al_map_rgb(255,0,0), 2);
                 }
                 
             }
@@ -491,9 +509,8 @@ void Farm::draw(){
                     double scale = ((double)pl->getMonsters()[acessFac.getMonsterIndex(i)].getExp())/((double)Monster::EXP);
                     double w = scale*BAR_LENGTH;
 
-                    // debug_log("w: %lf\n", w);
-                    al_draw_bitmap(blue_bar, FEED_BUTTON[i].first, FEED_BUTTON[i].second-80, 0);
-                    al_draw_bitmap_region(yellow_bar, 0, 0, w, 100, FEED_BUTTON[i].first, FEED_BUTTON[i].second-80, 0);
+                    al_draw_bitmap(blue_bar, FEED_BUTTON[i].first, FEED_BUTTON[i].second-40, 0);
+                    al_draw_bitmap_region(yellow_bar, 0, 0, w, 100, FEED_BUTTON[i].first, FEED_BUTTON[i].second-40, 0);
 
                     std::string str = std::to_string(pl->getMonsters()[acessFac.getMonsterIndex(i)].getExp());
                     str = str + "/1000";
@@ -508,67 +525,74 @@ void Farm::draw(){
             al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
             
             //exit
-            bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+            bool exitHover = Point(1142, 47).overlap(DC->mouse, 38);
             auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
             al_draw_bitmap(exit, 1100, 10, 0);
 
             //selection tab
             auto sel = IC->get("./assets/image/scene/selection.png");
-            al_draw_bitmap(sel, 100, 50, 0);
+            al_draw_bitmap(sel, 250, 10, 0);
 
             //owned monsters
             debug_log("owned: %d\n", pl->getMonsters().size());
             int i=0;
             for(auto &m: pl->getMonsters()){
                 if(m.getPlacing()==Monster::PLACE_M::NONE && match(m, acessFac)){
-                    auto img = m.getImgInPfp();
+                    // Check if mouse is hovering over this monster
+                    bool monsterHover = Rectangle(MONS_POS[i].first, MONS_POS[i].second,
+                        MONS_POS[i].first+WIDTH, MONS_POS[i].second+HEIGHT).overlap(DC->mouse);
+                    
+                    auto img = monsterHover ? m.getImgInPfpHover() : m.getImgInPfp();
                     if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
-                    al_draw_rectangle(MONS_POS[i].first, MONS_POS[i].second, MONS_POS[i].first+WIDTH, MONS_POS[i].second+HEIGHT, al_map_rgb(255,0,0), 2);
+
+                    // al_draw_rectangle(MONS_POS[i].first, MONS_POS[i].second, 
+                    //     MONS_POS[i].first+WIDTH, MONS_POS[i].second+HEIGHT, al_map_rgb(255,0,0), 2);
                     i++;
                 }
             }
 
             //more monsters button
-            bool moreHover = Rectangle(500, 450, 700, 600).overlap(DC->mouse);
+            bool moreHover = Rectangle(540, 630, 750, 720).overlap(DC->mouse);
             auto more = IC->get(getButtonImage("./assets/image/littleStuff/more.png", moreHover));
-            al_draw_bitmap(more, 500, 450, 0);
+            al_draw_bitmap(more, 540, 630, 0);
 
             //hitboxes
-            al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
-            al_draw_rectangle(500, 450, 700, 600, al_map_rgb(255,0,0), 2);
+            // al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
+            // al_draw_rectangle(540, 570, 750, 660, al_map_rgb(255,0,0), 2);
             break;
         }
         case FARM_MAIN:{
-
-            FARM_MAIN_GOTO:
 
             bg_path = "./assets/image/scene/food.png";
             al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
 
             //exit
-            bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
+            bool exitHover = Point(1142, 47).overlap(DC->mouse, 38);
             auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
             al_draw_bitmap(exit, 1100, 10, 0);
 
             // level up button
             if(acessFac.getLevel()<3){
-                bool levelHover = Rectangle(500, 450, 700, 600).overlap(DC->mouse);
+                bool levelHover = Rectangle(550, 630, 785, 700).overlap(DC->mouse);
                 auto level = IC->get(getButtonImage("./assets/image/littleStuff/level_up.png", levelHover));
-                al_draw_bitmap(level, 500, 450, 0);
+                al_draw_bitmap(level, 550, 630, 0);
             }
 
             //foods
             for(int i=0; i<MAX_ELE_PER_PAGE; i++){
                 auto &lib = pl->getAllFoods();
-                lib[static_cast<Food::TYPE_F>(i)].draw();
+                bool foodhover = Rectangle(FOOD_DISPLAY_POS[i].first, FOOD_DISPLAY_POS[i].second, 
+                    FOOD_DISPLAY_POS[i].first+Food::width, FOOD_DISPLAY_POS[i].second+Food::length).overlap(DC->mouse);
+                lib[static_cast<Food::TYPE_F>(i)].draw(foodhover);
             }
 
             //hitboxes
-            al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
-            al_draw_rectangle(500, 450, 700, 600, al_map_rgb(255,0,0), 2);
-            for(int i=0; i<MAX_ELE_PER_PAGE; i++){
-                al_draw_rectangle(FOOD_DISPLAY_POS[i].first, FOOD_DISPLAY_POS[i].second, FOOD_DISPLAY_POS[i].first+Food::width, FOOD_DISPLAY_POS[i].second+Food::length, al_map_rgb(255,0,0), 2);
-            }
+            // al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
+            // al_draw_rectangle(550, 630, 785, 700, al_map_rgb(255,0,0), 2);
+            // for(int i=0; i<MAX_ELE_PER_PAGE; i++){
+            //     al_draw_rectangle(FOOD_DISPLAY_POS[i].first, FOOD_DISPLAY_POS[i].second, 
+            //         FOOD_DISPLAY_POS[i].first+Food::width, FOOD_DISPLAY_POS[i].second+Food::length, al_map_rgb(255,0,0), 2);
+            // }
             break;
         }
         case PUR_NOTI:{
@@ -589,7 +613,9 @@ void Farm::draw(){
                 
                 for(int i=0; i<MAX_ELE_PER_PAGE; i++){
                     auto &lib = pl->getAllFoods();
-                    lib[static_cast<Food::TYPE_F>(i)].draw();
+                    bool foodhover = Rectangle(FOOD_DISPLAY_POS[i].first, FOOD_DISPLAY_POS[i].second, 
+                        FOOD_DISPLAY_POS[i].first+Food::width, FOOD_DISPLAY_POS[i].second+Food::length).overlap(DC->mouse);
+                    lib[static_cast<Food::TYPE_F>(i)].draw(foodhover);
                 }
             }else if(pre_state==LAND_SETTING){
                 bg_path = "./assets/image/scene/buildings.png";
@@ -639,7 +665,7 @@ void Farm::draw(){
 
             // Draw notification overlay on top
             bg_path = "./assets/image/scene/noti.png";
-            al_draw_bitmap(IC->get(bg_path), 200, 50, 0);
+            al_draw_bitmap(IC->get(bg_path), 200, 20, 0);
             std::string str = 
                 (noti==LEVEL_UP_SUC)? "Successfully leveled up!":
                 (noti==LEVEL_UP_FAIL)? "OOPS! You're running short, maybe next time?":

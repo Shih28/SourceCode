@@ -145,15 +145,34 @@ void Store::draw(){
             auto img = monsterHover ? lib[i*2].getImgInStoreHover() : lib[i*2].getImgInStore();
             if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
 
-            // al_draw_rectangle(MONS_POS[i].first, MONS_POS[i].second,
-            //     MONS_POS[i].first+WIDTH, MONS_POS[i].second+HEIGHT, al_map_rgb(255,0,0), 2);
+            //coins
+            auto coin = IC->get("./assets/image/littleStuff/coin_bar.png");
+            al_draw_bitmap(coin, 50, 5, 0);
+            std::string c = std::to_string(pl->getCoin());
+            al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 200, 18, ALLEGRO_ALIGN_CENTRE, c.c_str());
+
         }
         break;
     }
     case PUR_NOTI:{
         // Draw notification overlay on top
+            for(int i = 0; i < MAX_NUM && i < lib.size()/2; i++){
+            
+                auto img = lib[i*2].getImgInStore();
+                if(img) al_draw_bitmap(img, MONS_POS[i].first, MONS_POS[i].second, 0);
+
+                //coins
+                auto coin = IC->get("./assets/image/littleStuff/coin_bar.png");
+                al_draw_bitmap(coin, 50, 5, 0);
+                std::string c = std::to_string(pl->getCoin());
+                al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 200, 18, ALLEGRO_ALIGN_CENTRE, c.c_str());
+
+            }
+
+
             auto bg_path = "./assets/image/scene/noti.png";
             al_draw_bitmap(IC->get(bg_path), 200, 50, 0);
+
             std::string str = (noti==SUCCESS)? "Purchess successful!": "OOPS! You're running short!";
             al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(255,255,255), 640, 360, ALLEGRO_ALIGN_CENTRE, str.c_str());
         break;

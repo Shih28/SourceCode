@@ -98,6 +98,7 @@ class Facility{
         int& getY(){ return y;}
         int& getTimeCnt(){ return time_cnt;}
         bool getHaveMonsters(int i){ return have_monsters[i];}
+        bool getInVal(){ return inVal;}
         STATUS_F getStatus(){ return status;}
         TYPE_F getType(){return type;}
         Food::TYPE_F getFood(){ return food_type;}

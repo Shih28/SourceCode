@@ -433,6 +433,13 @@ void Farm::draw(){
             auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
             al_draw_bitmap(exit, 1100, 10, 0);
 
+            //coins
+            auto coin = IC->get("./assets/image/littleStuff/coin_bar.png");
+            al_draw_bitmap(coin, 50, 5, 0);
+            std::string c = std::to_string(pl->getCoin());
+            al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 200, 18, ALLEGRO_ALIGN_CENTRE, c.c_str());
+
+
 
             //hitboxes
             // al_draw_circle(1142, 47, 38, al_map_rgb(255,0,0), 2); //exit
@@ -578,12 +585,30 @@ void Farm::draw(){
             }
 
             //foods
+
             for(int i=0; i<MAX_ELE_PER_PAGE; i++){
                 auto &lib = pl->getAllFoods();
                 bool foodhover = Rectangle(FOOD_DISPLAY_POS[i].first, FOOD_DISPLAY_POS[i].second, 
                     FOOD_DISPLAY_POS[i].first+Food::width, FOOD_DISPLAY_POS[i].second+Food::length).overlap(DC->mouse);
+
                 lib[static_cast<Food::TYPE_F>(i)].draw(foodhover);
+                if(acessFac.getLevel()>=2){
+                    std::string img_path = acessFac.getLevel()==2? "./assets/image/littleStuff/x2" : "./assets/image/littleStuff/x3";
+                    if(foodhover){
+                        img_path = img_path + "2.png";
+                    }else{
+                        img_path = img_path + ".png";
+                    }
+                    auto img = IC->get(img_path);
+                    al_draw_bitmap(img, FOOD_DISPLAY_POS[i].first+Food::width-40, FOOD_DISPLAY_POS[i].second, 0);
+                }
             }
+
+            //coins
+            auto coin = IC->get("./assets/image/littleStuff/coin_bar.png");
+            al_draw_bitmap(coin, 50, 5, 0);
+            std::string c = std::to_string(pl->getCoin());
+            al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 200, 18, ALLEGRO_ALIGN_CENTRE, c.c_str());
 
             //hitboxes
             // al_draw_circle(1100, 10, 40, al_map_rgb(255,0,0), 2);
@@ -600,57 +625,66 @@ void Farm::draw(){
                 bg_path = "./assets/image/scene/food.png";
                 al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
                 
-                bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
-                auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
+                auto exit = IC->get("./assets/image/littleStuff/exit.png");
                 al_draw_bitmap(exit, 1100, 10, 0);
                 
                 if(acessFac.getLevel()<3){
-                    bool levelHover = Rectangle(500, 450, 700, 600).overlap(DC->mouse);
-                    auto level = IC->get(getButtonImage("./assets/image/littleStuff/level_up.png", levelHover));
-                    al_draw_bitmap(level, 500, 450, 0);
+                    auto level = IC->get("./assets/image/littleStuff/level_up.png");
+                    al_draw_bitmap(level, 550, 630, 0);
                 }
                 
                 for(int i=0; i<MAX_ELE_PER_PAGE; i++){
                     auto &lib = pl->getAllFoods();
-                    bool foodhover = Rectangle(FOOD_DISPLAY_POS[i].first, FOOD_DISPLAY_POS[i].second, 
-                        FOOD_DISPLAY_POS[i].first+Food::width, FOOD_DISPLAY_POS[i].second+Food::length).overlap(DC->mouse);
-                    lib[static_cast<Food::TYPE_F>(i)].draw(foodhover);
+                    lib[static_cast<Food::TYPE_F>(i)].draw(false);
+                    if(acessFac.getLevel()>=2){
+                        std::string img_path = acessFac.getLevel()==2? "./assets/image/littleStuff/x2.png" : "./assets/image/littleStuff/x3.png";
+                        auto img = IC->get(img_path);
+                        al_draw_bitmap(img, FOOD_DISPLAY_POS[i].first+Food::width-40, FOOD_DISPLAY_POS[i].second, 0);
+                    }
                 }
+                
+                auto coin = IC->get("./assets/image/littleStuff/coin_bar.png");
+                al_draw_bitmap(coin, 50, 5, 0);
+                std::string c = std::to_string(pl->getCoin());
+                al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 200, 18, ALLEGRO_ALIGN_CENTRE, c.c_str());
             }else if(pre_state==LAND_SETTING){
                 bg_path = "./assets/image/scene/buildings.png";
                 al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
                 
                 auto farm = IC->get("./assets/image/store/farm.png");
-                al_draw_bitmap(farm, 50, 350, 0);
-                
                 auto fire = IC->get("./assets/image/store/fire_hab.png");
                 auto water = IC->get("./assets/image/store/water_hab.png");
                 auto wind = IC->get("./assets/image/store/wind_hab.png");
                 auto lightning = IC->get("./assets/image/store/lightning_hab.png");
                 
-                al_draw_bitmap(fire, 250, 350, 0);
-                al_draw_bitmap(water, 500, 350, 0);
-                al_draw_bitmap(wind, 750, 350, 0);
-                al_draw_bitmap(lightning, 1000, 350, 0);
+                al_draw_bitmap(fire, 100, 400, 0);
+                al_draw_bitmap(water, 500, 400, 0);
+                al_draw_bitmap(lightning, 900, 400, 0);
+                al_draw_bitmap(wind, 700, 100, 0);
+                al_draw_bitmap(farm, 300, 100, 0);
                 
-                bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
-                auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
+                auto exit = IC->get("./assets/image/littleStuff/exit.png");
                 al_draw_bitmap(exit, 1100, 10, 0);
+                
+                auto coin = IC->get("./assets/image/littleStuff/coin_bar.png");
+                al_draw_bitmap(coin, 50, 5, 0);
+                std::string c = std::to_string(pl->getCoin());
+                al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 200, 18, ALLEGRO_ALIGN_CENTRE, c.c_str());
             }else if(pre_state==HABITAT_MAIN){
                 bg_path = "./assets/image/scene/feed.png";
                 al_draw_bitmap(IC->get(bg_path), 0, 0, 0);
                 
-                bool exitHover = Point(1100, 10).overlap(DC->mouse, 40);
-                auto exit = IC->get(getButtonImage("./assets/image/littleStuff/exit.png", exitHover));
+                auto exit = IC->get("./assets/image/littleStuff/exit.png");
                 al_draw_bitmap(exit, 1100, 10, 0);
                 
-                bool add1Hover = Point(500, 400).overlap(DC->mouse, 40);
-                auto add1 = IC->get(getButtonImage("./assets/image/littleStuff/add.png", add1Hover));
-                al_draw_bitmap(add1, 500, 400, 0);
-                
-                bool add2Hover = Point(800, 400).overlap(DC->mouse, 40);
-                auto add2 = IC->get(getButtonImage("./assets/image/littleStuff/add.png", add2Hover));
-                al_draw_bitmap(add2, 800, 400, 0);
+                if(!acessFac.getHaveMonsters(0)) {
+                    auto add1 = IC->get("./assets/image/littleStuff/add.png");
+                    al_draw_bitmap(add1, 270, 350, 0);
+                }
+                if(!acessFac.getHaveMonsters(1)) {
+                    auto add2 = IC->get("./assets/image/littleStuff/add.png");
+                    al_draw_bitmap(add2, 900, 350, 0);
+                }
                 
                 for(int i=0; i<2; i++){
                     if(acessFac.getHaveMonsters(i)){
@@ -658,6 +692,35 @@ void Farm::draw(){
                         if(idx >= 0 && idx < (int)pl->getMonsters().size()){
                             pl->getMonsters()[idx].draw();
                         }
+                    }
+                }
+                
+                auto berry = IC->get("./assets/image/littleStuff/berry_bar.png");
+                al_draw_bitmap(berry, 50, 5, 0);
+                std::string b = std::to_string(pl->getBer());
+                al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(0,0,0), 200, 18, ALLEGRO_ALIGN_CENTRE, b.c_str());
+                
+                for(int i=0; i<2; i++){
+                    if(acessFac.getHaveMonsters(i) && pl->getMonsters()[acessFac.getMonsterIndex(i)].getLevel()<=2){
+                        auto feedBut = IC->get("./assets/image/littleStuff/b100.png");
+                        al_draw_bitmap(feedBut, FEED_BUTTON[i].first, FEED_BUTTON[i].second, 0);
+                    }
+                }
+                
+                for(int i=0; i<2; i++){
+                    if(acessFac.getHaveMonsters(i)){
+                        auto blue_bar = IC->get(BAR_IMG[0]);
+                        auto yellow_bar = IC->get(BAR_IMG[1]);
+                        
+                        double scale = ((double)pl->getMonsters()[acessFac.getMonsterIndex(i)].getExp())/((double)Monster::EXP);
+                        double w = scale*BAR_LENGTH;
+
+                        al_draw_bitmap(blue_bar, FEED_BUTTON[i].first, FEED_BUTTON[i].second-40, 0);
+                        al_draw_bitmap_region(yellow_bar, 0, 0, w, 100, FEED_BUTTON[i].first, FEED_BUTTON[i].second-40, 0);
+
+                        std::string str = std::to_string(pl->getMonsters()[acessFac.getMonsterIndex(i)].getExp());
+                        str = str + "/1000";
+                        al_draw_text(FontCenter::get_instance()->caviar_dreams[24], al_map_rgb(255,255,255),FEED_BUTTON[i].first+50, FEED_BUTTON[i].second-100, ALLEGRO_ALIGN_CENTRE, str.c_str());
                     }
                 }
             }

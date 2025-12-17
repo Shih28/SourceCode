@@ -1,0 +1,146 @@
+[
+  {
+    "food_type": 0,
+    "have_monsters": [
+      false,
+      false
+    ],
+    "id": 0,
+    "inVal": false,
+    "inVal_cnt": 0,
+    "level": 1,
+    "monster_in_hab_idx": [
+      -1,
+      -1
+    ],
+    "status": 0,
+    "time_cnt": 0,
+    "type": 5
+  },
+  {
+    "food_type": 0,
+    "have_monsters": [
+      false,
+      false
+    ],
+    "id": 1,
+    "inVal": false,
+    "inVal_cnt": 0,
+    "level": 1,
+    "monster_in_hab_idx": [
+      -1,
+      -1
+    ],
+    "status": 0,
+    "time_cnt": 0,
+    "type": 5
+  },
+  {
+    "food_type": 1,
+    "have_monsters": [
+      false,
+      false
+    ],
+    "id": 2,
+    "inVal": false,
+    "inVal_cnt": 0,
+    "level": 1,
+    "monster_in_hab_idx": [
+      -1,
+      -1
+    ],
+    "status": 0,
+    "time_cnt": 0,
+    "type": 5
+  },
+  {
+    "food_type": 0,
+    "have_monsters": [
+      false,
+      false
+    ],
+    "id": 3,
+    "inVal": false,
+    "inVal_cnt": 0,
+    "level": 1,
+    "monster_in_hab_idx": [
+      -1,
+      -1
+    ],
+    "status": 0,
+    "time_cnt": 0,
+    "type": 5
+  },
+  {
+    "food_type": 0,
+    "have_monsters": [
+      false,
+      false
+    ],
+    "id": 4,
+    "inVal": false,
+    "inVal_cnt": 0,
+    "level": 1,
+    "monster_in_hab_idx": [
+      -1,
+      -1
+    ],
+    "status": 0,
+    "time_cnt": 0,
+    "type": 5
+  },
+  {
+    "food_type": 0,
+    "have_monsters": [
+      false,
+      false
+    ],
+    "id": 5,
+    "inVal": false,
+    "inVal_cnt": 0,
+    "level": 1,
+    "monster_in_hab_idx": [
+      -1,
+      -1
+    ],
+    "status": 0,
+    "time_cnt": 0,
+    "type": 5
+  },
+  {
+    "food_type": 0,
+    "have_monsters": [
+      false,
+      false
+    ],
+    "id": 6,
+    "inVal": false,
+    "inVal_cnt": 0,
+    "level": 1,
+    "monster_in_hab_idx": [
+      -1,
+      -1
+    ],
+    "status": 0,
+    "time_cnt": 0,
+    "type": 5
+  },
+  {
+    "food_type": 0,
+    "have_monsters": [
+      false,
+      false
+    ],
+    "id": 7,
+    "inVal": false,
+    "inVal_cnt": 0,
+    "level": 1,
+    "monster_in_hab_idx": [
+      -1,
+      -1
+    ],
+    "status": 0,
+    "time_cnt": 0,
+    "type": 5
+  }
+]

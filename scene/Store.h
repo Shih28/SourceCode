@@ -2,6 +2,7 @@
 #define STORE_H_INCLUDED
 
 #include "Scene.h"
+#include "../Monster.h"
 #include <vector>
 
 class Store: public Scene{
@@ -14,9 +15,12 @@ class Store: public Scene{
             WATER,
             WIND,
             LIGHTNING,
-            BUY_ATTEMPT,
-            SUCESS_PUR,
-            FAIL_PUR
+            PUR_NOTI
+        };
+
+        enum NOTI_S{
+            SUCCESS,
+            FAIL
         };
 
 
@@ -31,8 +35,11 @@ class Store: public Scene{
         }
 
     private:
-    STATE_S state;
-
+    void updateMonstersInDisplay();
+    STATE_S state, pre_state;
+    NOTI_S noti;
+    int noti_cnt;
+    int monsters_in_display_idx[4];
         
 };
 

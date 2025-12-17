@@ -30,7 +30,7 @@ class Monster{
             j = json{{"id", m.id}, 
                 {"level", m.level}, 
                 {"exp", m.exp}, 
-                {"species", m.species}, 
+                {"species", m.species},
                 {"type", m.type}};
         }
 
@@ -69,7 +69,9 @@ class Monster{
         Monster()
             : id(Monster::i++), level(1), exp(0),
             x(0), y(0), center_x(0), center_y(0),
+            x_f(0), y_f(0),
             width(50), length(80), dx(1), dy(0),
+            price(0),  
             species(SPECIES_M::FIRE), type(TYPE_M::BAD_GYAUMAL_BABY),
             status(STATUS_M::NO_DISPLAY), place(PLACE_M::NONE),
             display_cnt(0), direction(true), feed(false), upgrade_finished(false)

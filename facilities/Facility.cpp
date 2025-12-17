@@ -161,9 +161,24 @@ void Facility::update(){
 
 void Facility::timeUpdate(){
     auto pl = Player::getPlayer();
+    time_cnt = al_get_timer_count(timer);
 
     switch (status){
         case EMPTY:{
+            time_cnt = 0;
+            al_set_timer_count(timer, 0);
+            al_stop_timer(timer);
+            
+            // Reset all parameters except position (x, y) and id
+            level = 1;
+            inVal = false;
+            inVal_cnt = 0;
+            type = UNDETERMINE;
+            have_monsters[0] = false;
+            have_monsters[1] = false;
+            monster_in_hab_idx[0] = -1;
+            monster_in_hab_idx[1] = -1;
+            
             break;
         }
         case IDLE:{
@@ -182,7 +197,6 @@ void Facility::timeUpdate(){
                     status = DONE;
                 }
             }
-            // debug_log("time_cnt: %d\n", al_get_timer_count(timer));
             break;
         }
         case DONE:{

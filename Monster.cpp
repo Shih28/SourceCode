@@ -135,11 +135,7 @@ void Monster::update(){
                 direction = !direction;
             }
 
-            if(y+length+dy>(int)its_habitat.downmost()+50|| y+dy<(int)its_habitat.upmost()){
-                dy = -dy;
-            }
             x += dx;
-            y += dy;
             
             break;
         }

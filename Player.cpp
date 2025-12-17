@@ -8,7 +8,21 @@
 #include "facilities/Facility.h"
 #include <fstream>
 
-const std::string facilitiesPath = "./database/facilitiesData.json";
+const std::string DATA_PATHS[] = 
+    {"./database/PlayerData.json",
+     "./database/FacilitiesData.json",
+     "./database/MonsterData.json"
+    };
+
+const int FEED_SPACING = 500;
+const int FEED_START_X = (1280 - FEED_SPACING) / 2;
+const int FEED_Y = 300;
+
+const std::pair<int, int> MONS_POS_FEED_MENU[] = {
+    {FEED_START_X-190, FEED_Y},
+    {FEED_START_X-15 + FEED_SPACING, FEED_Y}
+};
+
 using json = nlohmann::json;
 
 // Monster configuration structure for easier management
@@ -106,7 +120,7 @@ bool Player::saveFacilities(){
         json root = json::array();
         for(const auto &f: land_settings) root.push_back(f);
 
-        std::ofstream ofs(facilitiesPath);
+        std::ofstream ofs(DATA_PATHS[1]);
         if(!ofs){
             debug_log("ERROR: failed to open .json in saveFacilities()!\n");
             return false;
@@ -124,7 +138,7 @@ bool Player::saveFacilities(){
 
 bool Player::loadFacilties(){
     try{
-        std::ifstream ifs(facilitiesPath);
+        std::ifstream ifs(DATA_PATHS[1]);
         if(!ifs.is_open()){
             debug_log("WARNING: no facilitiesData.json start initialization\n");
             land_settings.clear();
@@ -133,14 +147,44 @@ bool Player::loadFacilties(){
                 f->setPosMenu(LAND_POS[i].first, LAND_POS[i].second);
                 land_settings.push_back(*f);
             }
-            return true;
+            return false;
         }
 
         land_settings.clear();
         json root;
         ifs >> root;
+        int i=0;
         for(const auto &j: root){
             land_settings.push_back(j.get<Facility>());
+            land_settings[i].setPosMenu(LAND_POS[i].first, LAND_POS[i].second);
+            auto timer = land_settings[i].getTimer();
+            
+            if(land_settings[i].getStatus()==Facility::STATUS_F::WORKING){
+                al_set_timer_count(timer, land_settings[i].getTimeCnt());
+                al_start_timer(timer);
+            }else{
+                al_set_timer_count(timer, 0);
+                al_stop_timer(timer);
+            }
+
+            //initialize monster's data if in HABITAT
+            if(land_settings[i].getHaveMonsters(0)){
+                int idx = land_settings[i].getMonsterIndex(0);
+                monster_owned[idx].setPosFeed(MONS_POS_FEED_MENU[0].first, MONS_POS_FEED_MENU[0].second);
+                monster_owned[idx].setPosMenu(LAND_POS[i].first, LAND_POS[i].second);
+                monster_owned[idx].setPlacing(Monster::PLACE_M::HABITAT);
+                monster_owned[idx].setFacilityRec(land_settings[i].getHitbox());
+            }
+
+
+            if(land_settings[i].getHaveMonsters(1)){
+                int idx = land_settings[i].getMonsterIndex(1);
+                monster_owned[idx].setPosFeed(MONS_POS_FEED_MENU[1].first, MONS_POS_FEED_MENU[1].second);
+                monster_owned[idx].setPosMenu(LAND_POS[i].first, LAND_POS[i].second);
+                monster_owned[idx].setPlacing(Monster::PLACE_M::HABITAT);
+                monster_owned[idx].setFacilityRec(land_settings[i].getHitbox());
+            }
+            i++;
         }
         debug_log("SUCESS: facilities' data loaded!\n");
         return true;
@@ -153,14 +197,23 @@ bool Player::loadFacilties(){
 }
 
 void Player::load(){
-    if(!loadFacilties()){
-        debug_log("ERROR: fail to load Facilities data!\n");
+
+    //player's data
+    if(!loadPlayerData()){
+        debug_log("ERROR: fail to load user's Player's data!\n");
     }
 
-    //coins and berries
-    coin = 10000;
-    berries = 4000;
+    //user's monsters' data
+    if(!loadUserMonsters()){
+        debug_log("ERROR: fail to load user's Monster's data!\n");
+    }
 
+    //user's facilities' data
+    if(!loadFacilties()){
+        debug_log("ERROR: fail to load user's Facilities data!\n");
+    }
+
+    //data references
     loadAllMonsters();
     loadAllFoods();
     getPlayer()->setrequest(Game::STATE::MENU);
@@ -171,17 +224,68 @@ void Player::update(){
 }
 
 void Player::write(){
+
+    //player's data
+    if(!savePlayerData()){
+        debug_log("ERROR: fail to save user's Player's data!\n");
+    }
+
+    //user's facilities' data
     if(!saveFacilities()){
-        debug_log("ERROR: fail to save Facilities data!\n");
+        debug_log("ERROR: fail to save user's Facilities data!\n");
+    }
+
+    //user's monster's data
+    if(!saveUserMonsters()){
+        debug_log("ERROR: fail to save user's Monsters data!\n");
     }
 }
 
 bool Player::loadUserMonsters(){
 
+    try{
+        std::ifstream ifs(DATA_PATHS[2]);
+        if(!ifs.is_open()){
+            debug_log("WARNING: no facilitiesData.json start initialization\n");
+            return false;
+        }
+        monster_owned.clear();
+        json root;
+        ifs >> root;
+        for(const auto &j: root){
+            monster_owned.push_back(j.get<Monster>());
+        }
+        debug_log("SUCESS: Monsters data loaded!\n");
+        return true;
+        
+    }catch(const std::exception &e){
+        debug_log("ERROR: fail to load Monsters data!\n");
+        debug_log(e.what());
+        return false;
+    }
+    
 }
 
 bool Player::saveUserMonsters(){
+    try{
+        json root = json::array();
+        for(const auto &m: monster_owned) root.push_back(m);
 
+        std::ofstream ofs(DATA_PATHS[2]);
+        if(!ofs){
+            debug_log("ERROR: failed to open MonsterData.json in saveUserMonsters()!\n");
+            return false;
+        }
+        
+        ofs << root.dump(2);
+        debug_log("SUCCESS: Monsters data saved!\n");
+        return true;
+        
+    }catch(const std::exception& e){
+        debug_log("ERROR: failed to save Monsters data!\n");
+        debug_log(e.what());
+        return false;
+    }
 }
 
 bool Player::loadAllMonsters(){
@@ -247,4 +351,67 @@ bool Player::loadAllFoods(){
     }
 
     return true;
+}
+
+bool Player::savePlayerData(){
+    try{
+        json j = *this;  // Automatically calls to_json friend function
+        
+        std::ofstream ofs(DATA_PATHS[0]);
+        if(!ofs){
+            debug_log("ERROR: failed to create PlayerData.json!\n");
+            return false;
+        }
+        
+        ofs << j.dump(2);
+        debug_log("SUCCESS: Player data saved!\n");
+        return true;
+        
+    }catch(const std::exception& e){
+        debug_log("ERROR: failed to save Player's data!\n");
+        debug_log(e.what());
+        return false;
+    }
+}
+
+bool Player::loadPlayerData(){
+    try{
+        std::ifstream ifs(DATA_PATHS[0]);
+        if(!ifs.is_open()){
+            debug_log("WARNING: no PlayerData.json, start initialization\n");
+            coin = 10000;
+            berries = 5000;
+            exp = 0;
+            return false;
+        }
+
+        json root;
+        ifs >> root;
+        from_json(root, *this);
+        
+        debug_log("SUCCESS: Player data loaded!\n");
+        return true;
+        
+    }catch(const std::exception &e){
+        debug_log("ERROR: fail to load Player's data!\n");
+        debug_log(e.what());
+        return false;
+    }
+}
+/*
+* @brief in-game initialization
+*/
+bool Player::initializeAllData(){
+    
+    auto pl = Player::getPlayer();
+    //player data reset
+    pl->getCoin() = 10000;
+    pl->getBer() = 5000;
+    //monster & facilities
+    pl->getMonsters().clear();
+    for(auto &f: pl->getFacilities()){
+        f.setStatus(Facility::STATUS_F::EMPTY);
+    }
+    return true;
+
 }

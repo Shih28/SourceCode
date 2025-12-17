@@ -6,6 +6,9 @@
 #include "facilities/Facility.h"
 #include "Monster.h"
 #include "Food.h"
+#include "single_include/nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 class Player
 {
@@ -14,6 +17,21 @@ public:
 		static Player p;
 		return &p;
 	};
+	
+	friend void to_json(json &j, const Player &p){
+		j = json{
+			{"berries", p.berries},
+			{"coin", p.coin},
+			{"exp", p.exp}
+		};
+	}
+	
+	friend void from_json(const json &j, Player &p){
+		j.at("berries").get_to(p.berries);
+		j.at("coin").get_to(p.coin);
+		j.at("exp").get_to(p.exp);
+	}
+	
 	void load();
 	void update();
 	void write();
@@ -36,19 +54,21 @@ public:
 	bool saveUserMonsters();
 	bool loadAllMonsters();
 	bool loadAllFoods();
+	bool savePlayerData();
+	bool loadPlayerData();
+	bool initializeAllData();
 	
 
 	int& getCoin(){ return coin;}
 	int& getBer(){ return berries;}
 	int& getExp(){ return exp;}
-	int& getLevel(){ return level;}
+
 
 private:
 	Game::STATE req;
 	int berries;
 	int coin;
 	int exp;
-	int level;
 	int fac_idx;
 	std::vector<Facility> land_settings;
 	std::vector<Monster> monster_owned;

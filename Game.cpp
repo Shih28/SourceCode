@@ -235,7 +235,6 @@ bool Game::game_update() {
 			auto PS = Profile::get();
 			PS->update();
 
-			debug_log("<Game> state: PROFILE\n");
 			STATE req = Player::getPlayer()->getRequest();
 			if(req!=state){
 				scene_init(req);
@@ -248,7 +247,6 @@ bool Game::game_update() {
 			auto SS = Store::get();
 			SS->update();
 
-			debug_log("<Game> state: STORE\n");
 			STATE req = Player::getPlayer()->getRequest();
 			if(req!=state){
 				scene_init(req);

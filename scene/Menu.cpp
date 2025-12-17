@@ -64,6 +64,7 @@ void Menu::update(){
 
     auto &fec = pl->getFacilities();
     auto &mons = pl->getMonsters();
+
     //menu bg manipulation 
     if(DC->key_state[ALLEGRO_KEY_S]){
         y += MOVEMENT_SPEED;
@@ -155,6 +156,13 @@ void Menu::draw(){
     //monsters
     for(auto &m: pl->getMonsters()){
         m.draw();
+    }
+
+    for(auto &f: pl->getFacilities()){
+        if(f.getInVal()){
+            char str[] = "The farm is occupied!";
+            al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(255,255,255), 640, 360, ALLEGRO_ALIGN_CENTRE, str);
+        }
     }
 
     //attack, shop, profile with hover effects

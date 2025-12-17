@@ -78,22 +78,17 @@ void Facility::draw(){
 
     }else if(status==DONE && type==FARM){
         auto berries = IC->get(BERRY_IMG);
-        al_draw_bitmap(berries, x+width/2, y-15, 0);
-        // al_draw_rectangle(x+width/2, y-15, x+width, y, al_map_rgb(255, 0, 0), 2);
+        al_draw_bitmap(berries, x+width/2-50, y-45, 0);
+        // al_draw_rectangle(x+width/2-40, y-45, x+width/2+60, y+50, al_map_rgb(255, 0, 0), 2);
     }
 
     //for habitats
     if(status==DONE && type!=FARM){
         auto coin = IC->get(COIN_IMG);
-        al_draw_bitmap(coin, x+width/2-20, y-30, 0);
-        // al_draw_rectangle(x+width/2, y-15, x+width, y, al_map_rgb(255, 0, 0), 2);
+        al_draw_bitmap(coin, x+width/2-60, y-55, 0);
+        // al_draw_rectangle(x+width/2-40, y-45, x+width/2+60, y+50, al_map_rgb(255, 0, 0), 2);
     }
 
-    //draw invalid message
-    if(inVal){
-        char str[] = "The farm is occupied!";
-        al_draw_text(FontCenter::get_instance()->caviar_dreams[36], al_map_rgb(255,255,255), 640, 360, ALLEGRO_ALIGN_CENTRE, str);
-    }
 }
 
 void Facility::update(){
@@ -114,12 +109,14 @@ void Facility::update(){
             //berries
             auto &food = (*pl->getAllFoods().find(food_type)).second;
             
-            pl->getBer() += food.getRewBer();
-            pl->getExp() += food.getReExp();
+            pl->getBer() += food.getRewBer()*level;
+            pl->getExp() += food.getReExp()*level;
             status = IDLE;
         }else if(status==DONE && type!=FARM){
             //coins
-            pl->getCoin() += 1000;
+            int cnt=1;
+            if(have_monsters[0]&&have_monsters[1]) cnt = 2;
+            pl->getCoin() += 1000*cnt;
             status = WORKING;
             al_start_timer(timer);
         }else{
@@ -132,18 +129,18 @@ void Facility::update(){
     SKIP:
 
     //when bubble is clicked
-    if(status==DONE && Rectangle(x+width/2, y-15, x+width, y).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+    if(status==DONE && Rectangle(x+width/2-40, y-45, x+width/2+60, y+50).overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
         if(type==FARM){
             //berries
             auto &food = (*pl->getAllFoods().find(food_type)).second;
-            pl->getBer() += food.getRewBer();
-            pl->getExp() += food.getReExp();
+            pl->getBer() += food.getRewBer()*level;
+            pl->getExp() += food.getReExp()*level;
             status = IDLE;
         }else{
             //coins
-            int cnt=0;
-            cnt = (have_monsters[0])? cnt+1: cnt;
-            cnt = (have_monsters[1])? cnt+1: cnt;
+            int cnt=1;
+            if(have_monsters[0]&&have_monsters[1]) cnt = 2;
+
             pl->getCoin() += 1000*cnt;
             status = WORKING;
             al_start_timer(timer);
@@ -158,6 +155,7 @@ void Facility::update(){
     }
 
 }
+
 
 void Facility::timeUpdate(){
     auto pl = Player::getPlayer();

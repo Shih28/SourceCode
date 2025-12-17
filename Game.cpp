@@ -160,8 +160,7 @@ Game::game_init() {
  * @return Whether the game should keep running (true) or reaches the termination criteria (false).
  * @see Game::STATE
  */
-bool
-Game::game_update() {
+bool Game::game_update() {
 	DataCenter *DC = DataCenter::get_instance();
 	OperationCenter *OC = OperationCenter::get_instance();
 	SoundCenter *SC = SoundCenter::get_instance();
@@ -221,8 +220,6 @@ Game::game_update() {
 			break;
 		}
 		case STATE::FARM:{
-			// debug_log("<Game> state: FARM\n");
-
 			auto FS = Farm::get();
 			FS->update();
 
@@ -277,6 +274,8 @@ Game::game_update() {
 			break;
 		}
 		case STATE::END: {
+			//save game datas
+			Player::getPlayer()->write();
 			return false;
 		}
 	}
@@ -289,13 +288,20 @@ Game::game_update() {
 			OC->update();
 		}
 	}
+
+	//detection for END state
+	if(DC->key_state[ALLEGRO_KEY_BACKSPACE] && !DC->prev_key_state[ALLEGRO_KEY_BACKSPACE]){
+		Player::getPlayer()->setrequest(STATE::END);
+	}
+
+	//initialize all user's game data
+	if(DC->key_state[ALLEGRO_KEY_ESCAPE] && !DC->prev_key_state[ALLEGRO_KEY_ESCAPE]){
+		Player::getPlayer()->initializeAllData();
+	}
+
 	// game_update is finished. The states of current frame will be previous states of the next frame.
 	memcpy(DC->prev_key_state, DC->key_state, sizeof(DC->key_state));
 	memcpy(DC->prev_mouse_state, DC->mouse_state, sizeof(DC->mouse_state));
-
-	//debug mouse state
-	// debug_log("%d, %d, %d, %d\n", DC->mouse_state[0], DC->mouse_state[1], DC->mouse_state[2], DC->mouse_state[3]);
-	// debug_log("%d, %d\n", DC->mouse_state[1], DC->prev_mouse_state[1]);
 	
 	return true;
 }

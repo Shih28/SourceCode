@@ -36,7 +36,13 @@ class Facility{
             {"type", static_cast<int>(f.type)},
             {"x", f.x},
             {"y", f.y},
-            {"level", f.level}
+            {"level", f.level},
+            {"time_cnt", f.time_cnt},
+            {"inVal", f.inVal},
+            {"inVal_cnt", f.inVal_cnt},
+            {"food_type", static_cast<int>(f.food_type)},
+            {"have_monsters", {f.have_monsters[0], f.have_monsters[1]}},
+            {"monster_in_hab_idx", {f.monster_in_hab_idx[0], f.monster_in_hab_idx[1]}}
             };
         }
 
@@ -50,6 +56,17 @@ class Facility{
             j.at("x").get_to(f.x);
             j.at("y").get_to(f.y);
             j.at("level").get_to(f.level);
+            j.at("time_cnt").get_to(f.time_cnt);
+            j.at("inVal").get_to(f.inVal);
+            j.at("inVal_cnt").get_to(f.inVal_cnt);
+    
+            int ft = 0;
+            j.at("food_type").get_to(ft);
+            f.food_type = static_cast<Food::TYPE_F>(ft);
+            j.at("have_monsters").at(0).get_to(f.have_monsters[0]);
+            j.at("have_monsters").at(1).get_to(f.have_monsters[1]);
+            j.at("monster_in_hab_idx").at(0).get_to(f.monster_in_hab_idx[0]);
+            j.at("monster_in_hab_idx").at(1).get_to(f.monster_in_hab_idx[1]);
         }
 
         friend bool match(Monster &m, Facility &f){
@@ -65,7 +82,7 @@ class Facility{
 
             return false;
         }
-        Facility(): id{i++}, status{EMPTY}, type{UNDETERMINE}, x{0}, y{0}, level{1}, inVal{false}, inVal_cnt{0}{
+        Facility(): id{i++}, status{EMPTY}, type{UNDETERMINE}, x{0}, y{0}, level{1}, time_cnt{0}{
             timer = al_create_timer(1);
             have_monsters[0] = false;
             have_monsters[1] = false;
@@ -115,8 +132,8 @@ class Facility{
         int id;
         int x,y; //left-upmost for menu
         int level;
+        int time_cnt, inVal_cnt;
         bool inVal;
-        int inVal_cnt;
         Food::TYPE_F food_type;
         STATUS_F status;
         TYPE_F type;

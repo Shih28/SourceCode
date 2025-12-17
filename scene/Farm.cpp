@@ -76,8 +76,6 @@ const std::string BAR_IMG[] = {
 
 const int MAX_ELE_PER_PAGE = 4;
 
-int Farm::page = 0;
-
 // Helper function to get button image with hover effect
 // If hovering is true, attempts to load "name2.png", otherwise loads "name.png"
 static std::string getButtonImage(const std::string& basePath, bool hovering) {
@@ -114,7 +112,6 @@ void Farm::update(){
 
     //monster updates
     for(auto &m: pl->getMonsters()){
-        // debug_log("monster_update%d: %d %d\n", m.getID(), m.getPlacing(), m.getStatus());
         m.update();
     }
     

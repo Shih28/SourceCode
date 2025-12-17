@@ -156,6 +156,7 @@ void Facility::update(){
 
 }
 
+
 void Facility::timeUpdate(){
     auto pl = Player::getPlayer();
     time_cnt = al_get_timer_count(timer);

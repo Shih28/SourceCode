@@ -245,4 +245,6 @@ bool Player::loadAllFoods(){
         Food::registerTypeImages(static_cast<Food::TYPE_F>(i), FOOD_IMG[i]);
         i++;
     }
+
+    return true;
 }

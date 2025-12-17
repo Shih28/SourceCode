@@ -14,6 +14,15 @@ const std::string DATA_PATHS[] =
      "./database/MonsterData.json"
     };
 
+const int FEED_SPACING = 500;
+const int FEED_START_X = (1280 - FEED_SPACING) / 2;
+const int FEED_Y = 300;
+
+const std::pair<int, int> MONS_POS_FEED_MENU[] = {
+    {FEED_START_X-190, FEED_Y},
+    {FEED_START_X-15 + FEED_SPACING, FEED_Y}
+};
+
 using json = nlohmann::json;
 
 // Monster configuration structure for easier management
@@ -144,8 +153,38 @@ bool Player::loadFacilties(){
         land_settings.clear();
         json root;
         ifs >> root;
+        int i=0;
         for(const auto &j: root){
             land_settings.push_back(j.get<Facility>());
+            land_settings[i].setPosMenu(LAND_POS[i].first, LAND_POS[i].second);
+            auto timer = land_settings[i].getTimer();
+            
+            if(land_settings[i].getStatus()==Facility::STATUS_F::WORKING){
+                al_set_timer_count(timer, land_settings[i].getTimeCnt());
+                al_start_timer(timer);
+            }else{
+                al_set_timer_count(timer, 0);
+                al_stop_timer(timer);
+            }
+
+            //initialize monster's data if in HABITAT
+            if(land_settings[i].getHaveMonsters(0)){
+                int idx = land_settings[i].getMonsterIndex(0);
+                monster_owned[idx].setPosFeed(MONS_POS_FEED_MENU[0].first, MONS_POS_FEED_MENU[0].second);
+                monster_owned[idx].setPosMenu(LAND_POS[i].first, LAND_POS[i].second);
+                monster_owned[idx].setPlacing(Monster::PLACE_M::HABITAT);
+                monster_owned[idx].setFacilityRec(land_settings[i].getHitbox());
+            }
+
+
+            if(land_settings[i].getHaveMonsters(1)){
+                int idx = land_settings[i].getMonsterIndex(1);
+                monster_owned[idx].setPosFeed(MONS_POS_FEED_MENU[1].first, MONS_POS_FEED_MENU[1].second);
+                monster_owned[idx].setPosMenu(LAND_POS[i].first, LAND_POS[i].second);
+                monster_owned[idx].setPlacing(Monster::PLACE_M::HABITAT);
+                monster_owned[idx].setFacilityRec(land_settings[i].getHitbox());
+            }
+            i++;
         }
         debug_log("SUCESS: facilities' data loaded!\n");
         return true;
@@ -164,14 +203,14 @@ void Player::load(){
         debug_log("ERROR: fail to load user's Player's data!\n");
     }
 
-    //user's facilities' data
-    if(!loadFacilties()){
-        debug_log("ERROR: fail to load user's Facilities data!\n");
-    }
-
     //user's monsters' data
     if(!loadUserMonsters()){
         debug_log("ERROR: fail to load user's Monster's data!\n");
+    }
+
+    //user's facilities' data
+    if(!loadFacilties()){
+        debug_log("ERROR: fail to load user's Facilities data!\n");
     }
 
     //data references
@@ -363,16 +402,7 @@ bool Player::loadPlayerData(){
 * @brief in-game initialization
 */
 bool Player::initializeAllData(){
-    for(int i=0; i<3; i++){
-        std::ofstream ofs(DATA_PATHS[i]);
-        if(!ofs){
-            debug_log("ERROR: can't open file %d\n", i);
-            return false;
-        }
-        ofs.clear();
-        ofs.close();
-    }
-
+    
     auto pl = Player::getPlayer();
     //player data reset
     pl->getCoin() = 10000;

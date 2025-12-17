@@ -12,6 +12,8 @@
 #include "allegro5/allegro_primitives.h"
 #include "../data/FontCenter.h"
 
+int Farm::page = 0;
+
 // Screen and element dimensions
 const int SCREEN_WIDTH = 1280;
 const int SCREEN_HEIGHT = 720;

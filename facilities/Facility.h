@@ -34,8 +34,6 @@ class Facility{
             {"id", f.id},
             {"status", static_cast<int>(f.status)},
             {"type", static_cast<int>(f.type)},
-            {"x", f.x},
-            {"y", f.y},
             {"level", f.level},
             {"time_cnt", f.time_cnt},
             {"inVal", f.inVal},
@@ -53,8 +51,6 @@ class Facility{
             j.at("type").get_to(t);
             f.status = static_cast<STATUS_F>(s);
             f.type = static_cast<TYPE_F>(t);
-            j.at("x").get_to(f.x);
-            j.at("y").get_to(f.y);
             j.at("level").get_to(f.level);
             j.at("time_cnt").get_to(f.time_cnt);
             j.at("inVal").get_to(f.inVal);
@@ -100,6 +96,7 @@ class Facility{
         Rectangle getHitbox(){ return Rectangle(x, y, x+width, y+length);}
         int& getX(){ return x;}
         int& getY(){ return y;}
+        int& getTimeCnt(){ return time_cnt;}
         bool getHaveMonsters(int i){ return have_monsters[i];}
         STATUS_F getStatus(){ return status;}
         TYPE_F getType(){return type;}

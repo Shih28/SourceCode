@@ -64,6 +64,14 @@ public:
     void setActedThisTurn(bool acted) { acted_this_turn = acted; }
     void resetTurnState() { acted_this_turn = false; }
     
+    // Ability/Ultimate usage tracking (once per battle)
+    bool hasUsedAbility() const { return ability_used; }
+    bool hasUsedUltimate() const { return ultimate_used; }
+    void setAbilityUsed() { ability_used = true; }
+    void setUltimateUsed() { ultimate_used = true; }
+    bool canUseAbility() const { return !ability_used; }
+    bool canUseUltimate() const { return !ultimate_used; }
+    
     // Ultimate video playback
     /**
      * @brief Play the ultimate animation video for this monster
@@ -112,6 +120,10 @@ private:
     int stun_turns;
     int poison_turns;
     
+    // Ability/Ultimate usage (once per battle)
+    bool ability_used;
+    bool ultimate_used;
+    
     // Position
     int position_x;
     int position_y;
@@ -124,7 +136,7 @@ private:
     // Helper methods
     void calculateStats();
     void loadUltimateVideo();
-    std::string getSpeciesString() const;
+    std::string getTypeString() const;
 };
 
 #endif

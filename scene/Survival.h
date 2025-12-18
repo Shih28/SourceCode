@@ -5,9 +5,7 @@
 #include "../shapes/Point.h"
 #include <vector>
 #include <string>
-
-// Forward declaration
-class ALLEGRO_BITMAP;
+#include <allegro5/bitmap.h>
 
 /**
  * @brief A survival mini-game where player controls a monster to fight enemies
@@ -45,7 +43,7 @@ private:
         bool isAlive;         // Is monster alive?
         bool isPlayer;        // Is this the player's monster?
         int monsterType;      // Index to monster sprite
-        std::string spritePath; // Path to monster sprite
+        ALLEGRO_BITMAP *img; // Path to monster sprite
         
         // Dash trail for collision (start and end points)
         float dashStartX, dashStartY;
@@ -76,22 +74,11 @@ private:
             isPlayerBullet(false), isActive(false) {}
     };
 
-    // Particle structure (decorative dots)
-    struct Particle {
-        float x, y;
-        float vx, vy;
-        float radius;
-        float friction;
-        
-        Particle() : x(0), y(0), vx(0), vy(0), radius(3.0f), friction(0.95f) {}
-    };
-
     // Game data
     GameState gameState;
     SurvivalMonster player;
     std::vector<SurvivalMonster> enemies;
     std::vector<Bullet> bullets;
-    std::vector<Particle> particles;
     
     // Game stats
     int score;
@@ -103,19 +90,16 @@ private:
     // Constants
     static constexpr int FIELD_WIDTH = 1280;
     static constexpr int FIELD_HEIGHT = 720;
-    static constexpr int PARTICLE_COUNT = 200;
     static constexpr float BULLET_SPEED = 10.0f;
     
     // Helper functions
     void spawnPlayer();
     void spawnEnemy();
     void spawnBullet(float x, float y, float targetX, float targetY, bool isPlayerBullet);
-    void initParticles();
     
     void updatePlayer();
     void updateEnemies();
     void updateBullets();
-    void updateParticles();
     void checkCollisions();
     
     void updateEnemyAI(SurvivalMonster& enemy);
@@ -126,7 +110,6 @@ private:
     
     void drawMonster(const SurvivalMonster& monster);
     void drawBullet(const Bullet& bullet);
-    void drawParticle(const Particle& particle);
     void drawUI();
     void drawGameOver();
     

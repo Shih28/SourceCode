@@ -53,6 +53,7 @@ void Menu::update(){
     auto atk_pt = Point(102, 620);
     auto shop_pt = Point(1172, 620);
     auto pfp_pt = Point(95, 98);
+    auto survival_pt = Point(250, 620);  // Left bottom, next to attack button
     
     if(atk_pt.overlap(DC->mouse, 90) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
         pl->setrequest(Game::STATE::LEVEL);
@@ -60,6 +61,8 @@ void Menu::update(){
         pl->setrequest(Game::STATE::STORE);
     }else if(pfp_pt.overlap(DC->mouse, 90) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
         pl->setrequest(Game::STATE::PROFILE);
+    }else if(survival_pt.overlap(DC->mouse, 60) && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
+        pl->setrequest(Game::STATE::SURVIVAL);
     }
 
     auto &fec = pl->getFacilities();
@@ -169,22 +172,43 @@ void Menu::draw(){
     auto atk_pt = Point(102, 620);
     auto shop_pt = Point(1172, 620);
     auto pfp_pt = Point(95, 98);
+    auto survival_pt = Point(250, 620);
     
     bool atkHover = atk_pt.overlap(DC->mouse, 90);
     bool pfpHover = pfp_pt.overlap(DC->mouse, 90);
     bool shopHover = DC->mouse.overlap(shop_pt, 90);
+    bool survivalHover = survival_pt.overlap(DC->mouse, 60);
     
     auto atk = IC->get(getButtonImage("./assets/image/littleStuff/attack.png", atkHover));
     auto pfp = IC->get(getButtonImage("./assets/image/littleStuff/profile.png", pfpHover));
     auto shop = IC->get(getButtonImage("./assets/image/littleStuff/shop.png", shopHover));
     auto coin = IC->get("./assets/image/littleStuff/coin_bar.png");
     auto berry = IC->get("./assets/image/littleStuff/berry_bar.png");
+    auto survivalBtn = IC->get("./assets/image/levelmenu/button.png");
 
     al_draw_bitmap(atk, 10, 525, 0);
     al_draw_bitmap(pfp, 5, 5, 0);
     al_draw_bitmap(shop, 1082, 525, 0);
     al_draw_bitmap(coin, 400, 5, 0);
     al_draw_bitmap(berry, 850, 5, 0);
+    
+    // Draw survival button at left bottom (scaled and positioned)
+    if(survivalBtn) {
+        int btnW = al_get_bitmap_width(survivalBtn);
+        int btnH = al_get_bitmap_height(survivalBtn);
+        float scale = 80.0f / btnH;  // Scale to 80px height
+        float drawX = 210;
+        float drawY = 580;
+        al_draw_scaled_bitmap(survivalBtn, 0, 0, btnW, btnH, 
+                              drawX, drawY, btnW * scale, btnH * scale, 0);
+        
+        // Draw "Survival" text on button
+        auto FC = FontCenter::get_instance();
+        ALLEGRO_COLOR textColor = survivalHover ? al_map_rgb(255, 255, 100) : al_map_rgb(255, 255, 255);
+        al_draw_text(FC->caviar_dreams[FontSize::SMALL], textColor, 
+                    drawX + (btnW * scale) / 2, drawY + (btnH * scale) / 2 - 6,
+                    ALLEGRO_ALIGN_CENTER, "Survival");
+    }
 
     //draw number of berries and coins
     std::string c, b;

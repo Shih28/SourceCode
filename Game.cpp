@@ -19,6 +19,7 @@
 #include "scene/LevelMenu.h"
 #include "scene/Store.h"
 #include "scene/Profile.h"
+#include "scene/Survival.h"
 
 // fixed settings
 constexpr char game_icon_img_path[] = "./assets/image/game_icon.png";
@@ -271,6 +272,18 @@ bool Game::game_update() {
 			}
 			break;
 		}
+		case STATE::SURVIVAL: {
+			auto SV = Survival::get();
+			SV->update();
+
+			STATE req = Player::getPlayer()->getRequest();
+			if(req != state){
+				scene_init(req);
+				debug_log("<Game> state: toggle from SURVIVAL\n");
+				state = req;
+			}
+			break;
+		}
 		case STATE::END: {
 			//save game datas
 			Player::getPlayer()->write();
@@ -347,6 +360,11 @@ Game::game_draw() {
 			LevelMenu::getInstance()->draw();
 			break;
 		}
+		case STATE::SURVIVAL: {
+			auto SV = Survival::get();
+			SV->draw();
+			break;
+		}
 		case STATE::PAUSE: {
 			// game layout cover
 			al_draw_filled_rectangle(0, 0, DC->window_width, DC->window_height, al_map_rgba(50, 50, 50, 64));
@@ -382,6 +400,10 @@ void Game::scene_init(STATE st){
 	}
 	case STATE::PROFILE: {
 		Profile::get()->init();
+		break;
+	}
+	case STATE::SURVIVAL: {
+		Survival::get()->init();
 		break;
 	}
 	default:

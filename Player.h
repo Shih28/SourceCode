@@ -22,7 +22,8 @@ public:
 		j = json{
 			{"berries", p.berries},
 			{"coin", p.coin},
-			{"exp", p.exp}
+			{"exp", p.exp},
+			{"gunnerHighScore", p.gunnerHighScore}
 		};
 	}
 	
@@ -30,6 +31,11 @@ public:
 		j.at("berries").get_to(p.berries);
 		j.at("coin").get_to(p.coin);
 		j.at("exp").get_to(p.exp);
+		if(j.contains("gunnerHighScore")) {
+			j.at("gunnerHighScore").get_to(p.gunnerHighScore);
+		} else {
+			p.gunnerHighScore = 0;
+		}
 	}
 	
 	void load();
@@ -62,6 +68,8 @@ public:
 	int& getCoin(){ return coin;}
 	int& getBer(){ return berries;}
 	int& getExp(){ return exp;}
+	int getGunnerHighScore() const { return gunnerHighScore; }
+	void setGunnerHighScore(int score) { gunnerHighScore = score; }
 
 
 private:
@@ -69,6 +77,7 @@ private:
 	int berries;
 	int coin;
 	int exp;
+	int gunnerHighScore = 0;
 	int fac_idx;
 	std::vector<Facility> land_settings;
 	std::vector<Monster> monster_owned;

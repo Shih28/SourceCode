@@ -44,9 +44,14 @@ const int FEED_SPACING = 500;
 const int FEED_START_X = (SCREEN_WIDTH - FEED_SPACING) / 2;
 const int FEED_Y = 300;
 
+// const std::pair<int, int> MONS_POS_FEED_MENU[] = {
+//     {FEED_START_X-190, FEED_Y},
+//     {FEED_START_X-15 + FEED_SPACING, FEED_Y}
+// };
+
 const std::pair<int, int> MONS_POS_FEED_MENU[] = {
-    {FEED_START_X-190, FEED_Y},
-    {FEED_START_X-15 + FEED_SPACING, FEED_Y}
+    {150, 200},
+    {753,  200}
 };
 
 // Food display positions (2x2 grid, centered)

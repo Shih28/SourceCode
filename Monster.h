@@ -61,8 +61,18 @@ class Monster{
             BAD_GYAUMAL_ADAULT,
             FREETTLE_BABY,
             FREETTLE_ADAULT,
+            DAKUABENJA_BABY,
+            DAKUABENJA_ADAULT,
+            LORD_OF_ATL_BABY,
+            LORD_OF_ATL_ADAULT,
             VIRELIA_BABY,
-            VIRELIA_ADAULT
+            VIRELIA_ADAULT,
+            PANDALF_BABY,
+            PANDALF_ADAULT,
+            THORDER_BABY,
+            THORDER_ADAULT,
+            FENNEVYR_BABY,
+            FENNEVYR_ADAULT
             //to be added
         };
 

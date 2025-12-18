@@ -14,13 +14,10 @@ const std::string DATA_PATHS[] =
      "./database/MonsterData.json"
     };
 
-const int FEED_SPACING = 500;
-const int FEED_START_X = (1280 - FEED_SPACING) / 2;
-const int FEED_Y = 300;
 
 const std::pair<int, int> MONS_POS_FEED_MENU[] = {
-    {FEED_START_X-190, FEED_Y},
-    {FEED_START_X-15 + FEED_SPACING, FEED_Y}
+    {150, 200},
+    {753,  200}
 };
 
 using json = nlohmann::json;
@@ -67,6 +64,48 @@ const MonsterConfig MONSTER_CONFIGS[] = {
         9, 9, 9
     },
     {
+        Monster::DAKUABENJA_BABY,
+        Monster::WATER,
+        1500,
+        "./assets/image/monsters/water/Dakuabenja/1",
+        9,9,9
+    },
+    {
+        Monster::DAKUABENJA_ADAULT,
+        Monster::WATER,
+        1500,
+        "./assets/image/monsters/water/Dakuabenja/2",
+        9,9,9
+    },
+    {
+        Monster::LORD_OF_ATL_BABY,
+        Monster::WATER,
+        1800,
+        "./assets/image/monsters/water/LordOfAtlantis/1",
+        9,9,9
+    },
+    {
+        Monster::LORD_OF_ATL_ADAULT,
+        Monster::WATER,
+        1800,
+        "./assets/image/monsters/water/LordOfAtlantis/2",
+        9,9,9
+    },
+    {
+        Monster::PANDALF_BABY,
+        Monster::WIND,
+        2500,
+        "./assets/image/monsters/wind/Pandalf/1",
+        9, 9, 9
+    },
+    {
+        Monster::PANDALF_ADAULT,
+        Monster::WIND,
+        2500,
+        "./assets/image/monsters/wind/Pandalf/2",
+        9, 9, 9
+    },
+    {
         Monster::VIRELIA_BABY,
         Monster::WIND,
         2300,
@@ -78,6 +117,34 @@ const MonsterConfig MONSTER_CONFIGS[] = {
         Monster::WIND,
         2300,
         "./assets/image/monsters/wind/Virelia/2",
+        9, 9, 9
+    },
+    {
+        Monster::FENNEVYR_BABY,
+        Monster::LIGHTNING,
+        2300, 
+        "./assets/image/monsters/lightning/Fennevyr/1",
+        9, 9, 9
+    },
+    {
+        Monster::FENNEVYR_ADAULT,
+        Monster::LIGHTNING,
+        2300, 
+        "./assets/image/monsters/lightning/Fennevyr/2",
+        9, 9, 9
+    },
+    {
+        Monster::THORDER_BABY,
+        Monster::LIGHTNING,
+        2500,
+        "./assets/image/monsters/lightning/Thorder/1",
+        9, 9, 9
+    },
+    {
+        Monster::THORDER_ADAULT,
+        Monster::LIGHTNING,
+        2500,
+        "./assets/image/monsters/lightning/Thorder/2",
         9, 9, 9
     }
 };

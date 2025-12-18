@@ -22,11 +22,11 @@ const int MAX_MONSTERS_DISPLAYED = MONSTERS_PER_ROW * MAX_ROWS;
 
 // Calculate spacing and margins for centered grid
 const int HORIZONTAL_SPACING = 250;  // Space between monsters horizontally
-const int VERTICAL_SPACING = 200;    // Space between monsters vertically
+const int VERTICAL_SPACING = 260;    // Space between monsters vertically
 const int GRID_WIDTH = (MONSTERS_PER_ROW - 1) * HORIZONTAL_SPACING + MONSTER_WIDTH;
 const int GRID_HEIGHT = (MAX_ROWS - 1) * VERTICAL_SPACING + MONSTER_HEIGHT;
 const int START_X = (SCREEN_WIDTH - GRID_WIDTH) / 2  - 60;
-const int START_Y = (SCREEN_HEIGHT - GRID_HEIGHT) / 2 - 20 ;  // Slightly below center
+const int START_Y = (SCREEN_HEIGHT - GRID_HEIGHT) / 2 - 40 ;  // Slightly below center
 
 // Function to calculate monster position based on index
 std::pair<int, int> getMonsterPosition(int index) {

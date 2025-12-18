@@ -11,6 +11,7 @@
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_acodec.h>
+#include <allegro5/allegro_video.h>
 #include <vector>
 #include <cstring>
 #include <optional>
@@ -85,6 +86,7 @@ Game::Game(bool testMode) {
 	addon_init &= al_init_ttf_addon();
 	addon_init &= al_init_image_addon();
 	addon_init &= al_init_acodec_addon();
+	addon_init &= al_init_video_addon();
 	GAME_ASSERT(addon_init, "failed to initialize allegro addons.");
 
 	if(testMode) {
@@ -101,6 +103,8 @@ Game::Game(bool testMode) {
 	event_init &= al_install_mouse();
 	event_init &= al_install_audio();
 	GAME_ASSERT(event_init, "failed to initialize allegro events.");
+	
+	al_reserve_samples(1);
 
 	// initialize game body
 	GAME_ASSERT(
@@ -428,7 +432,7 @@ void Game::scene_init(STATE st){
 		break;
 	}
 	case STATE::BATTLE: {
-		BattleField::get()->init();
+		BattleField::get()->scene_init();
 		break;
 	}
 	default:

@@ -2,6 +2,7 @@
 #define LEVELMENU_H_INCLUDED
 
 #include <optional>
+#include <vector>
 #include <allegro5/allegro.h>
 #include "../shapes/Rectangle.h"
 #include "Scene.h"
@@ -21,7 +22,9 @@ private:
   ALLEGRO_BITMAP *close_hover_button_image;
   ALLEGRO_BITMAP *go_button_image;
   ALLEGRO_BITMAP *go_hover_button_image;
+  ALLEGRO_BITMAP *button_win_image;
   int levels_passed;
+  std::vector<int> passed_levels;
   LevelButton level_buttons[6];
   LevelButton* selected_level_button;
   Rectangle return_button_rect;
@@ -34,6 +37,9 @@ private:
   double intro_velocity;
   double intro_target_y;
   int animation_frame;
+  
+  bool saveLevelsPassed();
+  bool loadLevelsPassed();
 public:
   void init() override;
   void update() override;
@@ -41,6 +47,7 @@ public:
   void end() override;
   
   void scene_init();
+  void markLevelPassed(int level);
 
   static LevelMenu* getInstance(){
     static LevelMenu level_menu;

@@ -2,6 +2,8 @@
 #define BATTLEMONSTER_H_INCLUDED
 
 #include "../Monster.h"
+#include <allegro5/allegro_video.h>
+#include <string>
 
 /**
  * @brief Wrapper class for Monster that adds battle-specific data
@@ -15,6 +17,11 @@ public:
      * @param is_player True if this is a player's monster, false if enemy
      */
     BattleMonster(Monster* m, bool is_player = true);
+    
+    /**
+     * @brief Destructor to clean up video resources
+     */
+    ~BattleMonster();
     
     // Monster reference
     Monster* getMonster() { return monster; }
@@ -32,7 +39,6 @@ public:
     // Combat stats
     int getAttack() const { return attack; }
     int getDefense() const { return defense; }
-    int getSpeed() const { return speed; }
     
     // Battle state
     BattleMonster* getCurrentTarget() { return current_target; }
@@ -58,6 +64,36 @@ public:
     void setActedThisTurn(bool acted) { acted_this_turn = acted; }
     void resetTurnState() { acted_this_turn = false; }
     
+    // Ultimate video playback
+    /**
+     * @brief Play the ultimate animation video for this monster
+     * @details Starts playing the video based on monster species
+     */
+    void playUltimateVideo();
+    
+    /**
+     * @brief Update video playback state
+     * @details Should be called every frame to update video
+     */
+    void updateVideo();
+    
+    /**
+     * @brief Check if the ultimate video is currently playing
+     * @return True if video is playing, false otherwise
+     */
+    bool isVideoPlaying() const { return video_playing; }
+    
+    /**
+     * @brief Get the current video frame to draw
+     * @return ALLEGRO_BITMAP pointer to current frame, or nullptr if not playing
+     */
+    ALLEGRO_BITMAP* getVideoFrame();
+    
+    /**
+     * @brief Stop the video playback
+     */
+    void stopVideo();
+    
 private:
     Monster* monster; // Reference to the original monster
     bool is_player;   // Whether this is a player's monster or enemy
@@ -67,7 +103,6 @@ private:
     int current_hp;
     int attack;
     int defense;
-    int speed;
     
     // Battle state
     BattleMonster* current_target;
@@ -81,8 +116,15 @@ private:
     int position_x;
     int position_y;
     
-    // Helper to calculate stats from monster
+    // Ultimate video
+    ALLEGRO_VIDEO* ultimate_video;
+    bool video_playing;
+    std::string video_path;
+    
+    // Helper methods
     void calculateStats();
+    void loadUltimateVideo();
+    std::string getSpeciesString() const;
 };
 
 #endif

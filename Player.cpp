@@ -446,8 +446,8 @@ bool Player::loadPlayerData(){
         std::ifstream ifs(DATA_PATHS[0]);
         if(!ifs.is_open()){
             debug_log("WARNING: no PlayerData.json, start initialization\n");
-            coin = 10000;
-            berries = 5000;
+            coin = 50000;
+            berries = 15000;
             exp = 0;
             return false;
         }

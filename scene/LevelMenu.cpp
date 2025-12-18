@@ -49,24 +49,7 @@ namespace levelmenu {
 }
 
 void LevelMenu::init()
-{
-  ALLEGRO_FILE *file = al_fopen(levelmenu::level_passed_file, "r");
-  GAME_ASSERT(file != nullptr, "<LevelMenu> cannot find level_passed setting from assets");
-
-  char buffer[5];
-  size_t bytes_read = al_fread(file, buffer, sizeof(buffer) - 1);
-  buffer[bytes_read] = '\0';
-
-  try {
-    levels_passed = std::stoi(buffer);
-  } catch(std::invalid_argument& e) {
-    debug_log("<LevelMenu> Warning: invalid levels_passed setting from assets");
-    levels_passed = 1;
-  }
-  GAME_ASSERT(1 <= levels_passed && levels_passed <= 10, "<LevelMenu> invalid levels_passed settomg from assets");
-
-  al_fclose(file);
-  
+{  
   ImageCenter *IC = ImageCenter::get_instance();
   background = IC->get(levelmenu::background_image_path);
   button_image = IC->get(levelmenu::button_image_path);

@@ -650,8 +650,8 @@ void Survival::drawUI() {
 
     // Draw credit
     al_draw_text(FC->caviar_dreams[MEDIUM], al_map_rgb(100, 100, 100),
-                200, FIELD_HEIGHT - 25, ALLEGRO_ALIGN_CENTER,
-                "Credit (game idea): 林亦LYi@lyi");
+                200, FIELD_HEIGHT - 35, ALLEGRO_ALIGN_CENTER,
+                "Credit (game idea): Lin Yi@lyi");
 }
 
 void Survival::drawGameOver() {

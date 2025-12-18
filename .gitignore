@@ -1,6 +1,6 @@
 .vscode
 doxy_file
-*.pseuodo
+*.pseudo
 *.o
 *.exe
 game
@@ -10,6 +10,9 @@ game
 !libgcc_s_seh-1.dll
 !libstdc++-6.dll
 !libwinpthread-1.dll
+database/
+*.py
+game
 
 ##### Windows
 # Windows thumbnail cache files

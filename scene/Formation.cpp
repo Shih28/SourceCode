@@ -117,7 +117,18 @@ void Formation::update()
 
       Rectangle monster_rect(x, y, x + monster_width, y + monster_height);
 
-      if (monster_rect.overlap(DC->mouse) && DC->mouse_state[1] && !DC->prev_mouse_state[1])
+      // Check if already selected
+      bool already_selected = false;
+      for (int j = 0; j < 5; ++j)
+      {
+        if (selected_monsters[j] == &monsters[i])
+        {
+          already_selected = true;
+          break;
+        }
+      }
+
+      if (monster_rect.overlap(DC->mouse) && !already_selected && DC->mouse_state[1] && !DC->prev_mouse_state[1])
       {
         selectMonster(&monsters[i]);
         closeMonsterSelection();
@@ -211,9 +222,9 @@ void Formation::draw()
   }
 
   // Draw instruction
-  if (FC->caviar_dreams[FontSize::SMALL])
+  if (FC->caviar_dreams[FontSize::MEDIUM])
   {
-    al_draw_text(FC->caviar_dreams[FontSize::SMALL],
+    al_draw_text(FC->caviar_dreams[FontSize::MEDIUM],
                  al_map_rgb(200, 200, 200),
                  640, 140,
                  ALLEGRO_ALIGN_CENTER,
@@ -289,15 +300,15 @@ void Formation::drawMonsterSlots()
     {
       // Filled slot - draw monster
       Monster *monster = selected_monsters[i];
-      if (monster->getImg())
+      if (monster->getImgInPfp())
       {
         // Center monster image in slot
-        int img_width = al_get_bitmap_width(monster->getImg());
-        int img_height = al_get_bitmap_height(monster->getImg());
+        int img_width = al_get_bitmap_width(monster->getImgInPfp());
+        int img_height = al_get_bitmap_height(monster->getImgInPfp());
         int x = slot.x1 + ((slot.x2 - slot.x1) - img_width) / 2;
         int y = slot.y1 + ((slot.y2 - slot.y1) - img_height) / 2;
 
-        al_draw_bitmap(monster->getImg(), x, y, 0);
+        al_draw_bitmap(monster->getImgInPfp(), x, y, 0);
       }
 
       // Draw species indicator
@@ -308,19 +319,19 @@ void Formation::drawMonsterSlots()
 
         switch (monster->getSpecies())
         {
-        case Monster::WATER:
+        case Monster::SPECIES_M::WATER:
           species_name = "WATER";
           species_color = al_map_rgb(100, 150, 255);
           break;
-        case Monster::FIRE:
+        case Monster::SPECIES_M::FIRE:
           species_name = "FIRE";
           species_color = al_map_rgb(255, 100, 50);
           break;
-        case Monster::WIND:
+        case Monster::SPECIES_M::WIND:
           species_name = "WIND";
           species_color = al_map_rgb(150, 255, 150);
           break;
-        case Monster::LIGHTNING:
+        case Monster::SPECIES_M::LIGHTNING:
           species_name = "LIGHTNING";
           species_color = al_map_rgb(255, 255, 100);
           break;
@@ -360,12 +371,12 @@ void Formation::drawMonsterSelectionPopup()
 
   // Draw monsters in grid
   auto &monsters = pl->getMonsters();
-  int popup_start_x = 200;
-  int popup_start_y = 160;
+  int popup_start_x = 250;
+  int popup_start_y = 150;
   int monster_width = 100;
   int monster_height = 100;
-  int monsters_per_row = 9;
-  int spacing = 15;
+  int monsters_per_row = 7;
+  int spacing = 20;
 
   for (size_t i = 0; i < monsters.size(); ++i)
   {
@@ -403,18 +414,24 @@ void Formation::drawMonsterSelectionPopup()
       bg_color = al_map_rgb(60, 60, 100);
     }
 
-    al_draw_filled_rectangle(x, y, x + monster_width, y + monster_height, bg_color);
     al_draw_rectangle(x, y, x + monster_width, y + monster_height, al_map_rgb(150, 150, 200), 2);
 
-    // Draw monster image
-    if (monsters[i].getImg())
+    // Draw monster image 
+    if (hovering)
     {
-      int img_width = al_get_bitmap_width(monsters[i].getImg());
-      int img_height = al_get_bitmap_height(monsters[i].getImg());
+      int img_width = al_get_bitmap_width(monsters[i].getImgInPfp());
+      int img_height = al_get_bitmap_height(monsters[i].getImgInPfp());
       int img_x = x + (monster_width - img_width) / 2;
       int img_y = y + (monster_height - img_height) / 2;
 
-      al_draw_bitmap(monsters[i].getImg(), img_x, img_y, 0);
+      al_draw_bitmap_region(monsters[i].getImgInPfpHover(), img_width / 2 - 50, 50, 100, 100, x, y, 0);
+    } else {
+      int img_width = al_get_bitmap_width(monsters[i].getImgInPfp());
+      int img_height = al_get_bitmap_height(monsters[i].getImgInPfp());
+      int img_x = x + (monster_width - img_width) / 2;
+      int img_y = y + (monster_height - img_height) / 2;
+
+      al_draw_bitmap_region(monsters[i].getImgInPfp(), img_width / 2 - 50, 50, 100, 100, x, y, 0);
     }
 
     // Draw "SELECTED" text if already selected
@@ -458,7 +475,6 @@ void Formation::drawGoButton()
   ALLEGRO_BITMAP *return_image = hovering ? return_button_hover_image : return_button_image;
 
   al_draw_bitmap(return_image, return_button_rect.x1, return_button_rect.y1, 0);
-  al_draw_bitmap(go_button_image, go_button_rect.x1, go_button_rect.y1, 0);
 
   if (count > 0)
   {
@@ -473,14 +489,14 @@ void Formation::drawGoButton()
     {
       char count_text[32];
       snprintf(count_text, sizeof(count_text), "%d Monster%s Selected", count, count > 1 ? "s" : "");
-      al_draw_text(FC->caviar_dreams[FontSize::MEDIUM], al_map_rgb(255, 255, 255), 640, 520, ALLEGRO_ALIGN_CENTER, count_text);
+      al_draw_text(FC->caviar_dreams[FontSize::MEDIUM], al_map_rgb(255, 255, 255), 640, 530, ALLEGRO_ALIGN_CENTER, count_text);
     }
   }
   else
   {
     if (FC->caviar_dreams[FontSize::MEDIUM])
     {
-      al_draw_text(FC->caviar_dreams[FontSize::MEDIUM], al_map_rgb(200, 50, 50), 640, 520, ALLEGRO_ALIGN_CENTER, "Select at least 1 monster");
+      al_draw_text(FC->caviar_dreams[FontSize::MEDIUM], al_map_rgb(200, 50, 50), 640, 530, ALLEGRO_ALIGN_CENTER, "Select at least 1 monster");
     }
   }
 }
@@ -499,10 +515,7 @@ void Formation::closeMonsterSelection()
 
 void Formation::selectMonster(Monster *monster)
 {
-  if (selected_slot >= 0 && selected_slot < 5)
-  {
-    selected_monsters[selected_slot] = monster;
-  }
+  selected_monsters[selected_slot] = monster;
 }
 
 void Formation::removeMonster(int slot)

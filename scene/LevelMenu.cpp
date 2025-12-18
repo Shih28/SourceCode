@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include "../shapes/Point.h"
@@ -15,12 +16,16 @@
 #include "LevelMenu.h"
 #include "LevelButton.h"
 #include "BattleField.h"
+#include "../single_include/nlohmann/json.hpp"
+
+using json = nlohmann::json;
 
 namespace levelmenu {
   constexpr char background_image_path[] = "./assets/image/levelmenu/background.png";
   constexpr char button_image_path[] = "./assets/image/levelmenu/button.png";
   constexpr char button_hover_image_path[] = "./assets/image/levelmenu/button_hover.png";
   constexpr char button_selected_image_path[] = "./assets/image/levelmenu/button_selected.png";
+  constexpr char button_win_image_path[] = "./assets/image/levelmenu/button_win.png";
   constexpr char level_intro_image_path[] = "./assets/image/levelmenu/level_intro.png";
   constexpr char return_button_image_path[] = "./assets/image/levelmenu/return.png";
   constexpr char return_hover_button_image_path[] = "./assets/image/levelmenu/return_hover.png";
@@ -31,6 +36,7 @@ namespace levelmenu {
   constexpr char button_selected_sound_path[] = "./assets/sound/levelmenu/click.mp3";
   constexpr char button_hover_sound_path[] = "./assets/sound/levelmenu/hover.mp3";
   constexpr char level_passed_file[] = "./assets/config/levelmenu/levels_passed.txt";
+  constexpr char levels_passed_json[] = "./database/LevelsPassedData.json";
   
   const char* level_intro_texts[][3] = {
     {"Level 1: Welcome to the Adventure!", "Defeat basic enemies.", ""},
@@ -66,6 +72,7 @@ void LevelMenu::init()
   button_image = IC->get(levelmenu::button_image_path);
   button_hover_image = IC->get(levelmenu::button_hover_image_path);
   button_selected_image = IC->get(levelmenu::button_selected_image_path);
+  button_win_image = IC->get(levelmenu::button_win_image_path);
   level_intro_image = IC->get(levelmenu::level_intro_image_path);
   return_button_image = IC->get(levelmenu::return_button_image_path);
   return_hover_button_image = IC->get(levelmenu::return_hover_button_image_path);
@@ -105,6 +112,9 @@ void LevelMenu::scene_init() {
   intro_velocity = 0.0;
   intro_target_y = 110;
   animation_frame = 0;
+  
+  // Load passed levels data
+  loadLevelsPassed();
 }
 
 void LevelMenu::update()
@@ -163,6 +173,7 @@ void LevelMenu::update()
     if (animated_go_rect.overlap(DC->mouse)) {
       if (DC->mouse_state[1] && !DC->prev_mouse_state[1]) {
         SC->play(levelmenu::button_selected_sound_path, ALLEGRO_PLAYMODE_ONCE);
+        BattleField::get()->setLevel(selected_level_button->level);
         Player::getPlayer()->setrequest(Game::STATE::FORMATION);
         debug_log("<LevelMenu> Go button clicked, starting level %d\n", selected_level_button->level);
       }
@@ -205,10 +216,21 @@ void LevelMenu::draw()
   }
 
   for (LevelButton& button : level_buttons) {
+    // Check if this level is passed
+    bool is_passed = false;
+    for (int passed_level : passed_levels) {
+      if (passed_level == button.level) {
+        is_passed = true;
+        break;
+      }
+    }
+    
     if (&button == selected_level_button) {
       al_draw_bitmap(button_hover_image, button.position.x, button.position.y, 0);
     } else if (Circle(button.position + Point(60, 60), 50).overlap(DC->mouse)) {
       al_draw_bitmap(button_selected_image, button.position.x, button.position.y, 0);
+    } else if (is_passed && button_win_image) {
+      al_draw_bitmap(button_win_image, button.position.x, button.position.y, 0);
     } else {
       al_draw_bitmap(button_image, button.position.x, button.position.y, 0);
     }
@@ -278,4 +300,73 @@ void LevelMenu::draw()
 
 void LevelMenu::end() {
 
+}
+
+bool LevelMenu::saveLevelsPassed() {
+  try {
+    json j;
+    j["passed_levels"] = passed_levels;
+    
+    std::ofstream ofs(levelmenu::levels_passed_json);
+    if (!ofs) {
+      debug_log("ERROR: failed to create LevelsPassedData.json!\n");
+      return false;
+    }
+    
+    ofs << j.dump(2);
+    debug_log("SUCCESS: Levels passed data saved!\n");
+    return true;
+    
+  } catch (const std::exception& e) {
+    debug_log("ERROR: failed to save levels passed data!\n");
+    debug_log(e.what());
+    return false;
+  }
+}
+
+bool LevelMenu::loadLevelsPassed() {
+  try {
+    std::ifstream ifs(levelmenu::levels_passed_json);
+    if (!ifs.is_open()) {
+      debug_log("WARNING: no LevelsPassedData.json, starting with no levels passed\n");
+      passed_levels.clear();
+      return false;
+    }
+    
+    json root;
+    ifs >> root;
+    
+    if (root.contains("passed_levels")) {
+      passed_levels = root["passed_levels"].get<std::vector<int>>();
+    } else {
+      passed_levels.clear();
+    }
+    
+    debug_log("SUCCESS: Levels passed data loaded! %d levels passed\n", (int)passed_levels.size());
+    return true;
+    
+  } catch (const std::exception& e) {
+    debug_log("ERROR: failed to load levels passed data!\n");
+    debug_log(e.what());
+    passed_levels.clear();
+    return false;
+  }
+}
+
+void LevelMenu::markLevelPassed(int level) {
+  // Check if level is already marked as passed
+  debug_log("Marking level passed.");
+  for (int passed_level : passed_levels) {
+    if (passed_level == level) {
+      return; // Already marked
+    }
+  }
+  
+  // Add to passed levels
+  passed_levels.push_back(level);
+  
+  // Save to file
+  saveLevelsPassed();
+  
+  debug_log("Level %d marked as passed!\n", level);
 }

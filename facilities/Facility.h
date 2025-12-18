@@ -72,7 +72,7 @@ class Facility{
                 return f.type == Facility::TYPE_F::WATER_HABITAT;
             }else if(m.getSpecies()==Monster::WIND){
                 return f.type == Facility::TYPE_F::WIND_HABITAT;
-            }else if(m.getSpecies()==Monster::WATER){
+            }else if(m.getSpecies()==Monster::LIGHTNING){
                 return f.type == Facility::TYPE_F::LIGHTNING_HABITAT;
             }
 

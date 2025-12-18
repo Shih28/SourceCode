@@ -124,7 +124,7 @@ void Monster::update(){
         else if(level>2) upgrade_finished=true;
     }
 
-    debug_log("monster type %d\n", type);
+    // debug_log("monster type %d\n", type);
 
     switch(place){
         case HABITAT:{

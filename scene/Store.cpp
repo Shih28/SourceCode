@@ -133,7 +133,7 @@ void Store::draw(){
     //monsters
     switch (state){
     case ALL:{
-        debug_log("lib size: %d\n", lib.size());
+        // debug_log("lib size: %d\n", lib.size());
         // draw up to MAX_NUM items (4x2 grid = 8 monsters)
         
         for(int i = 0; i < MAX_NUM && i < lib.size()/2; i++){

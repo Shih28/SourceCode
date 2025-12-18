@@ -24,7 +24,7 @@ public:
 	 */
 	enum class STATE {
 		START, // -> MENU
-		MENU, // -> FARM, STORE, LEVEL, PROFILE, END
+		MENU, // -> FARM, STORE, LEVEL, PROFILE, SURVIVAL, END
 		FARM, // -> MENU, END
 		STORE, // -> MENU, END
 		PROFILE, // -> MENU, END
@@ -32,6 +32,7 @@ public:
 		LEVEL, // -> FORMATION, MENU
 		FORMATION, // -> LEVEL, BATTLE
 		PAUSE, // -> BATTLE
+		SURVIVAL, // -> MENU
 		END
 	};
 

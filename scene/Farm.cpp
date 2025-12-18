@@ -232,9 +232,9 @@ void Farm::update(){
            }//feed
            else if(Rectangle(FEED_BUTTON[0].first, FEED_BUTTON[0].second, FEED_BUTTON[0].first+150, FEED_BUTTON[0].second+80).overlap(DC->mouse)
                     && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
-                if(acessFac.getHaveMonsters(0)){
+                if(acessFac.getHaveMonsters(0) && pl->getMonsters()[acessFac.getMonsterIndex(0)].getLevel()<=2){
                     if(berries>=100){
-                        debug_log("FEED!");
+                        // debug_log("FEED!");
                         berries -= 100;
                         pl->getMonsters()[acessFac.getMonsterIndex(0)].Feed();
                     }else{
@@ -246,10 +246,10 @@ void Farm::update(){
             }//feed
             else if(Rectangle(FEED_BUTTON[1].first, FEED_BUTTON[1].second, FEED_BUTTON[1].first+150, FEED_BUTTON[1].second+80).overlap(DC->mouse)
                     && DC->mouse_state[1] && !DC->prev_mouse_state[1]){
-                if(acessFac.getHaveMonsters(1)){
+                if(acessFac.getHaveMonsters(1) && pl->getMonsters()[acessFac.getMonsterIndex(1)].getLevel()<=2){
                     
                     if(berries>=100){
-                        debug_log("FEED!");
+                        // debug_log("FEED!");
                         berries -= 100;
                         pl->getMonsters()[acessFac.getMonsterIndex(1)].Feed();
                     }else{
@@ -513,7 +513,7 @@ void Farm::draw(){
             }
 
             for(int i=0; i<2; i++){
-                if(acessFac.getHaveMonsters(i)){
+                if(acessFac.getHaveMonsters(i) && pl->getMonsters()[acessFac.getMonsterIndex(i)].getLevel()<=2){
                     auto blue_bar = IC->get(BAR_IMG[0]);
                     auto yellow_bar = IC->get(BAR_IMG[1]);
                     

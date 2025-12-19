@@ -305,10 +305,8 @@ void Formation::drawMonsterSlots()
         // Center monster image in slot
         int img_width = al_get_bitmap_width(monster->getImgInPfp());
         int img_height = al_get_bitmap_height(monster->getImgInPfp());
-        int x = slot.x1 + ((slot.x2 - slot.x1) - img_width) / 2;
-        int y = slot.y1 + ((slot.y2 - slot.y1) - img_height) / 2;
 
-        al_draw_bitmap(monster->getImgInPfp(), x, y, 0);
+        al_draw_scaled_bitmap(monster->getImgInPfp(), 0, 0, img_width, img_height, slot.x1, slot.y1, 120, 120, 0);
       }
 
       // Draw species indicator
@@ -421,17 +419,13 @@ void Formation::drawMonsterSelectionPopup()
     {
       int img_width = al_get_bitmap_width(monsters[i].getImgInPfp());
       int img_height = al_get_bitmap_height(monsters[i].getImgInPfp());
-      int img_x = x + (monster_width - img_width) / 2;
-      int img_y = y + (monster_height - img_height) / 2;
 
-      al_draw_bitmap_region(monsters[i].getImgInPfpHover(), img_width / 2 - 50, 50, 100, 100, x, y, 0);
+      al_draw_scaled_bitmap(monsters[i].getImgInPfpHover(), 0, 0, img_width, img_height, x, y, 100, 100, 0);
     } else {
       int img_width = al_get_bitmap_width(monsters[i].getImgInPfp());
       int img_height = al_get_bitmap_height(monsters[i].getImgInPfp());
-      int img_x = x + (monster_width - img_width) / 2;
-      int img_y = y + (monster_height - img_height) / 2;
 
-      al_draw_bitmap_region(monsters[i].getImgInPfp(), img_width / 2 - 50, 50, 100, 100, x, y, 0);
+      al_draw_scaled_bitmap(monsters[i].getImgInPfp(), 0, 0, img_width, img_height, x, y, 100, 100, 0);
     }
 
     // Draw "SELECTED" text if already selected

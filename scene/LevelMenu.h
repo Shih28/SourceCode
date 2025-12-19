@@ -23,7 +23,6 @@ private:
   ALLEGRO_BITMAP *go_button_image;
   ALLEGRO_BITMAP *go_hover_button_image;
   ALLEGRO_BITMAP *button_win_image;
-  int levels_passed;
   std::vector<int> passed_levels;
   LevelButton level_buttons[6];
   LevelButton* selected_level_button;

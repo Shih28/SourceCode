@@ -9,6 +9,8 @@ BattleMonster::BattleMonster(Monster* m, bool is_player)
       acted_this_turn(false),
       stun_turns(0),
       poison_turns(0),
+      ability_used(false),
+      ultimate_used(false),
       position_x(0),
       position_y(0),
       ultimate_video(nullptr),
@@ -37,41 +39,35 @@ void BattleMonster::calculateStats()
         return;
     }
     
-    // TODO: Calculate based on monster's actual stats
-    // For now, use placeholder calculations based on species
-    // These should be adjusted based on your game's balance
-    
     int base_hp = 100;
     int base_attack = 15;
     int base_defense = 10;
     
     // Species modifiers
-    // switch (monster->getSpecies()) {
-    //     case Monster::WATER:
-    //         base_hp += 20;
-    //         base_defense += 5;
-    //         break;
-    //     case Monster::FIRE:
-    //         base_attack += 10;
-    //         base_speed += 5;
-    //         break;
-    //     case Monster::WIND:
-    //         base_speed += 15;
-    //         base_defense -= 5;
-    //         break;
-    //     case Monster::LIGHTNING:
-    //         base_attack += 5;
-    //         base_speed += 10;
-    //         break;
-    //     default:
-    //         break;
-    // }
+    switch (monster->getSpecies()) {
+        case Monster::WATER:
+            base_hp += 20;
+            base_defense += 5;
+            break;
+        case Monster::FIRE:
+            base_attack += 15;
+            break;
+        case Monster::WIND:
+            base_hp += 30;
+            base_defense -= 10;
+            break;
+        case Monster::LIGHTNING:
+            base_attack += 5;
+            break;
+        default:
+            break;
+    }
     
     int level = monster->getLevel();
 
-    max_hp = base_hp + (level * 10);
-    attack = base_attack + (level * 5);
-    defense = base_defense + (level * 3);
+    max_hp = base_hp + (level * 30);
+    attack = base_attack + (level * 15);
+    defense = base_defense + (level * 5);
 }
 
 void BattleMonster::decrementStatusEffects()
@@ -94,8 +90,8 @@ void BattleMonster::loadUltimateVideo()
         return;
     }
     
-    std::string species_str = getSpeciesString();
-    video_path = "./assets/video/monster/" + species_str + ".ogv";
+    std::string type_str = getTypeString();
+    video_path = "./assets/video/monster/" + type_str + ".ogv";
     
     ultimate_video = al_open_video(video_path.c_str());
     if (!ultimate_video) {
@@ -105,21 +101,45 @@ void BattleMonster::loadUltimateVideo()
     }
 }
 
-std::string BattleMonster::getSpeciesString() const
+std::string BattleMonster::getTypeString() const
 {
     if (!monster) {
         return "default";
     }
     
-    switch (monster->getSpecies()) {
-        case Monster::WATER:
-            return "water";
-        case Monster::FIRE:
-            return "fire";
-        case Monster::WIND:
-            return "wind";
-        case Monster::LIGHTNING:
-            return "lightning";
+    switch (monster->getType()) {
+        case Monster::BAD_GYAUMAL_BABY:
+            return "BAD_GYAUMAL_BABY";
+        case Monster::BAD_GYAUMAL_ADAULT:
+            return "BAD_GYAUMAL_ADAULT";
+        case Monster::FREETTLE_BABY:
+            return "FREETTLE_BABY";
+        case Monster::FREETTLE_ADAULT:
+            return "FREETTLE_ADAULT";
+        case Monster::DAKUABENJA_BABY:
+            return "DAKUABENJA_BABY";
+        case Monster::DAKUABENJA_ADAULT:
+            return "DAKUABENJA_ADAULT";
+        case Monster::LORD_OF_ATL_BABY:
+            return "LORD_OF_ATL_BABY";
+        case Monster::LORD_OF_ATL_ADAULT:
+            return "LORD_OF_ATL_ADAULT";
+        case Monster::VIRELIA_BABY:
+            return "VIRELIA_BABY";
+        case Monster::VIRELIA_ADAULT:
+            return "VIRELIA_ADAULT";
+        case Monster::PANDALF_BABY:
+            return "PANDALF_BABY";
+        case Monster::PANDALF_ADAULT:
+            return "PANDALF_ADAULT";
+        case Monster::THORDER_BABY:
+            return "THORDER_BABY";
+        case Monster::THORDER_ADAULT:
+            return "THORDER_ADAULT";
+        case Monster::FENNEVYR_BABY:
+            return "FENNEVYR_BABY";
+        case Monster::FENNEVYR_ADAULT:
+            return "FENNEVYR_ADAULT";
         default:
             return "default";
     }

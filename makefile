@@ -2,7 +2,7 @@ OUT := game
 CC := g++
 
 
-CXXFLAGS := -Wall -std=c++17 -O2	
+CXXFLAGS := -std=c++17 -O2	
 SOURCE := $(wildcard *.cpp */*.cpp)
 OBJ := $(patsubst %.cpp, %.o, $(notdir $(SOURCE)))
 RM_OBJ := 

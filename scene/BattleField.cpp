@@ -123,7 +123,6 @@ void BattleField::scene_init() {
   state = BATTLE_INIT;
   current_turn = 1;
   battle_timer = 0.0f;
-  // Don't reset current_level here - it's set by setLevel() before scene_init()
   
   // Initialize action selection
   player_actions.clear();
@@ -355,20 +354,12 @@ void BattleField::updateBattle()
   // Update underlying monsters (only when no video playing)
   for (auto& battle_monster : player_monsters)
   {
-    if (battle_monster && battle_monster->getMonster())
-    {
-      battle_monster->getMonster()->update();
-      battle_monster->decrementStatusEffects();
-    }
+    battle_monster->decrementStatusEffects();
   }
 
   for (auto& battle_monster : enemy_monsters)
   {
-    if (battle_monster && battle_monster->getMonster())
-    {
-      battle_monster->getMonster()->update();
-      battle_monster->decrementStatusEffects();
-    }
+    battle_monster->decrementStatusEffects();
   }
   
   // Update damage displays
@@ -451,6 +442,10 @@ void BattleField::updateBattle()
         return;
       }
       
+      // Check which actions are available
+      bool can_use_ability = current_monster->canUseAbility();
+      bool can_use_ultimate = current_monster->canUseUltimate();
+      
       // Action button click handling
       if (DC->mouse_state[1] && !DC->prev_mouse_state[1])
       {
@@ -487,12 +482,12 @@ void BattleField::updateBattle()
             action.action = ATTACK;
             action_selected = true;
           }
-          else if (skill_button.overlap(mouse))
+          else if (skill_button.overlap(mouse) && can_use_ability)
           {
             action.action = ABILITY;
             action_selected = true;
           }
-          else if (ultimate_button.overlap(mouse))
+          else if (ultimate_button.overlap(mouse) && can_use_ultimate)
           {
             action.action = ULTIMATE_SKILL;
             action_selected = true;
@@ -561,7 +556,20 @@ void BattleField::updateBattle()
           MonsterAction enemy_action;
           enemy_action.monster = attacker.get();
           enemy_action.target = target;
-          enemy_action.action = ATTACK;  // Enemies only use basic attack
+          
+          // AI action selection: prefer ultimate > ability > attack (if available)
+          if (attacker->canUseUltimate())
+          {
+            enemy_action.action = ULTIMATE_SKILL;
+          }
+          else if (attacker->canUseAbility())
+          {
+            enemy_action.action = ABILITY;
+          }
+          else
+          {
+            enemy_action.action = ATTACK;  // Fallback to basic attack
+          }
           
           startAttackAnimation(enemy_action);
         }
@@ -589,6 +597,8 @@ void BattleField::updateBattle()
         if (monster && monster->isPoisoned())
         {
           int poison_damage = monster->getMaxHP() / 10;
+          // Show poison damage with display
+          createDamageDisplay(poison_damage, monster->getPositionX(), monster->getPositionY(), true);
           monster->takeDamage(poison_damage);
         }
       }
@@ -598,9 +608,19 @@ void BattleField::updateBattle()
         if (monster && monster->isPoisoned())
         {
           int poison_damage = monster->getMaxHP() / 10;
+          // Show poison damage with display
+          createDamageDisplay(poison_damage, monster->getPositionX(), monster->getPositionY(), true);
           monster->takeDamage(poison_damage);
         }
       }
+      
+      // Check battle result after poison damage
+      checkBattleEnd();
+      if (state == BATTLE_WON || state == BATTLE_LOST)
+      {
+        return;
+      }
+      
       current_executing_action++;
       attack_delay_timer = ATTACK_DELAY;
       return;
@@ -1257,6 +1277,10 @@ void BattleField::drawActionSelection()
   if (!current_monster || !current_monster->isAlive())
     return;
   
+  // Check which actions are available for current monster
+  bool can_use_ability = current_monster->canUseAbility();
+  bool can_use_ultimate = current_monster->canUseUltimate();
+  
   // Draw semi-transparent overlay on top half only
   al_draw_filled_rectangle(0, 0, FIELD_WIDTH, FIELD_HEIGHT, al_map_rgba(0, 0, 0, 100));
   
@@ -1270,11 +1294,17 @@ void BattleField::drawActionSelection()
   
   if (mouse.y >= panel_y) {
     if (55 < mouse.x && mouse.x < 450) {
-      hover_section = 0;  // Attack
+      hover_section = 0;  // Attack (always available)
     } else if (450 < mouse.x && mouse.x < 830) {
-      hover_section = 1;  // Ability
+      // Only register hover for ability if it can be used
+      if (can_use_ability) {
+        hover_section = 1;  // Ability
+      }
     } else if (830 < mouse.x && mouse.x < 1225) {
-      hover_section = 2;  // Ultimate
+      // Only register hover for ultimate if it can be used
+      if (can_use_ultimate) {
+        hover_section = 2;  // Ultimate
+      }
     }
   }
   
@@ -1303,6 +1333,25 @@ void BattleField::drawActionSelection()
     // Fallback if image not loaded
     al_draw_filled_rectangle(0, panel_y, FIELD_WIDTH, FIELD_HEIGHT, al_map_rgb(30, 30, 50));
     al_draw_rectangle(0, panel_y, FIELD_WIDTH, FIELD_HEIGHT, al_map_rgb(150, 150, 200), 3);
+  }
+  
+  // Draw "USED" overlay on unavailable actions
+  if (!can_use_ability) {
+    // Draw semi-transparent overlay on ability button area
+    al_draw_filled_rectangle(450, panel_y, 830, FIELD_HEIGHT, al_map_rgba(0, 0, 0, 150));
+    if (FC->caviar_dreams[FontSize::MEDIUM]) {
+      al_draw_text(FC->caviar_dreams[FontSize::MEDIUM], al_map_rgb(150, 150, 150),
+                  640, panel_y + 100, ALLEGRO_ALIGN_CENTER, "USED");
+    }
+  }
+  
+  if (!can_use_ultimate) {
+    // Draw semi-transparent overlay on ultimate button area
+    al_draw_filled_rectangle(830, panel_y, 1225, FIELD_HEIGHT, al_map_rgba(0, 0, 0, 150));
+    if (FC->caviar_dreams[FontSize::MEDIUM]) {
+      al_draw_text(FC->caviar_dreams[FontSize::MEDIUM], al_map_rgb(150, 150, 150),
+                  1027, panel_y + 100, ALLEGRO_ALIGN_CENTER, "USED");
+    }
   }
   
   // Draw title at top of panel
@@ -1513,8 +1562,60 @@ void BattleField::executeAction(const MonsterAction& action)
 
 void BattleField::executeMonsterSkill(BattleMonster* attacker, BattleMonster* target)
 {
-  // TODO: Play special effect video/animation for ability skill
-  // PLACEHOLDER: For now, just deal 1.5x damage
+  // Mark ability as used (can only use once per battle)
+  attacker->setAbilityUsed();
+  
+  // Check monster type for special abilities
+  Monster* monster = attacker->getMonster();
+  if (monster)
+  {
+    Monster::TYPE_M type = monster->getType();
+    
+    // Virelia has healing ability - heals self instead of attacking
+    if (type == Monster::VIRELIA_BABY)
+    {
+      int heal_amount = 20;
+      attacker->heal(heal_amount);
+      
+      // Create heal display (green, on self)
+      createDamageDisplay(-heal_amount, attacker->getPositionX(), attacker->getPositionY(), true);
+      return;
+    }
+    else if (type == Monster::VIRELIA_ADAULT)
+    {
+      int heal_amount = 35;  // Adult heals more
+      attacker->heal(heal_amount);
+      
+      // Create heal display (green, on self)
+      createDamageDisplay(-heal_amount, attacker->getPositionX(), attacker->getPositionY(), true);
+      return;
+    }
+    // Pandalf has poison ability - applies poison to target
+    else if (type == Monster::PANDALF_BABY)
+    {
+      int poison_turns = 2;  // Poison lasts 2 turns
+      target->setPoison(poison_turns);
+      
+      // Deal small initial damage
+      int damage = std::max(1, attacker->getAttack() / 2 - target->getDefense());
+      createDamageDisplay(damage, target->getPositionX(), target->getPositionY(), true);
+      target->takeDamage(damage);
+      return;
+    }
+    else if (type == Monster::PANDALF_ADAULT)
+    {
+      int poison_turns = 3;  // Adult poison lasts longer
+      target->setPoison(poison_turns);
+      
+      // Deal small initial damage
+      int damage = std::max(1, attacker->getAttack() / 2 - target->getDefense());
+      createDamageDisplay(damage, target->getPositionX(), target->getPositionY(), true);
+      target->takeDamage(damage);
+      return;
+    }
+  }
+  
+  // Default ability: deal 1.5x damage
   int damage = std::max(1, (int)(attacker->getAttack() * 1.5f) - target->getDefense());
   
   // Create damage display for skill (critical style)
@@ -1527,6 +1628,9 @@ void BattleField::executeMonsterSkill(BattleMonster* attacker, BattleMonster* ta
 
 void BattleField::executeMonsterUltimate(BattleMonster* attacker, BattleMonster* target)
 {
+  // Mark ultimate as used (can only use once per battle)
+  attacker->setUltimateUsed();
+  
   // Deal 2x damage (video already played during animation)
   int damage = std::max(1, (attacker->getAttack() * 2) - target->getDefense());
   
@@ -1661,7 +1765,16 @@ void BattleField::drawDamageDisplays()
     ALLEGRO_COLOR color;
     ALLEGRO_FONT* font;
     
-    if (display.is_critical)
+    // Negative damage means healing
+    bool is_healing = display.damage < 0;
+    
+    if (is_healing)
+    {
+      // Healing: green color
+      color = al_map_rgba(50, 255, 50, alpha);
+      font = FC->caviar_dreams[FontSize::LARGE];
+    }
+    else if (display.is_critical)
     {
       // Critical hits (abilities/ultimates): larger, orange/red
       color = al_map_rgba(255, 150, 0, alpha);
@@ -1674,9 +1787,16 @@ void BattleField::drawDamageDisplays()
       font = FC->caviar_dreams[FontSize::MEDIUM];
     }
     
-    // Draw damage number
+    // Draw damage/heal number
     char damage_text[16];
-    snprintf(damage_text, sizeof(damage_text), "%d", display.damage);
+    if (is_healing)
+    {
+      snprintf(damage_text, sizeof(damage_text), "+%d", -display.damage);
+    }
+    else
+    {
+      snprintf(damage_text, sizeof(damage_text), "%d", display.damage);
+    }
     
     // Draw shadow for better visibility
     al_draw_text(font,

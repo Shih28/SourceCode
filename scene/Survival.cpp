@@ -1,5 +1,6 @@
 #include "Survival.h"
 #include "../Utils.h"
+#include "../data/ImageCenter.h"
 #include "../data/DataCenter.h"
 #include "../data/ImageCenter.h"
 #include "../data/FontCenter.h"
@@ -37,7 +38,6 @@ void Survival::resetGame() {
     bullets.clear();
     
     spawnPlayer();
-    initParticles();
     
     // Spawn initial enemies
     for (int i = 0; i < 3; i++) {
@@ -63,9 +63,10 @@ void Survival::spawnPlayer() {
         int idx = std::rand() % monsters.size();
         player.monsterType = idx;
         // Use first monster's type for sprite path
-        player.spritePath = "./assets/image/monsters/fire/BadGyaumal/1/default/1.png";
+        player.img = monsters[idx].getWalkFrame(0);
     } else {
-        player.spritePath = "./assets/image/monsters/fire/BadGyaumal/1/default/1.png";
+        ImageCenter *IC = ImageCenter::get_instance();
+        player.img = IC->get("./assets/image/monsters/fire/BadGyaumal/1/default/1.png");
     }
 }
 
@@ -103,11 +104,19 @@ void Survival::spawnEnemy() {
     
     // Random monster sprite from available types
     const char* enemySprites[] = {
+        "./assets/image/monsters/fire/BadGyaumal/1/default/1.png",
+        "./assets/image/monsters/fire/BadGyaumal/2/default/1.png",
         "./assets/image/monsters/fire/Freettle/1/default/1.png",
+        "./assets/image/monsters/fire/Freettle/2/default/1.png",
+        "./assets/image/monsters/lightning/Fennevyr/1/default/1.png",
+        "./assets/image/monsters/lightning/Fennevyr/2/default/1.png",
         "./assets/image/monsters/wind/Virelia/1/default/1.png",
-        "./assets/image/monsters/fire/BadGyaumal/2/default/1.png"
+        "./assets/image/monsters/wind/Virelia/2/default/1.png",
+        "./assets/image/monsters/water/LordOfAtlantis/1/default/1.png",
+        "./assets/image/monsters/water/LordOfAtlantis/2/default/1.png"
     };
-    enemy.spritePath = enemySprites[std::rand() % 3];
+    auto *IC = ImageCenter::get_instance();
+    enemy.img = IC->get(enemySprites[std::rand() % 10]);
     
     enemy.shootCooldown = 1.0f + static_cast<float>(std::rand() % 20) / 10.0f;
     enemy.dashCooldown = 3.0f + static_cast<float>(std::rand() % 30) / 10.0f;
@@ -136,19 +145,6 @@ void Survival::spawnBullet(float x, float y, float targetX, float targetY, bool 
     bullets.push_back(bullet);
 }
 
-void Survival::initParticles() {
-    particles.clear();
-    particles.resize(PARTICLE_COUNT);
-    
-    for (auto& p : particles) {
-        p.x = static_cast<float>(std::rand() % FIELD_WIDTH);
-        p.y = static_cast<float>(std::rand() % FIELD_HEIGHT);
-        p.vx = 0;
-        p.vy = 0;
-        p.radius = 2.0f + static_cast<float>(std::rand() % 3);
-    }
-}
-
 void Survival::update() {
     DataCenter* DC = DataCenter::get_instance();
     
@@ -159,7 +155,6 @@ void Survival::update() {
         updatePlayer();
         updateEnemies();
         updateBullets();
-        updateParticles();
         checkCollisions();
         
         // Spawn timer
@@ -455,46 +450,6 @@ void Survival::updateBullets() {
         bullets.end());
 }
 
-void Survival::updateParticles() {
-    // Push particles away from monsters
-    auto pushParticles = [this](float mx, float my, float radius) {
-        for (auto& p : particles) {
-            float dist = distance(p.x, p.y, mx, my);
-            if (dist < radius + 20 && dist > 0) {
-                float pushForce = (radius + 20 - dist) / 5.0f;
-                float dx = p.x - mx;
-                float dy = p.y - my;
-                p.vx += (dx / dist) * pushForce;
-                p.vy += (dy / dist) * pushForce;
-            }
-        }
-    };
-    
-    // Push from player
-    pushParticles(player.x, player.y, player.radius);
-    
-    // Push from enemies
-    for (const auto& enemy : enemies) {
-        if (enemy.isAlive) {
-            pushParticles(enemy.x, enemy.y, enemy.radius);
-        }
-    }
-    
-    // Update particle positions
-    for (auto& p : particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vx *= p.friction;
-        p.vy *= p.friction;
-        
-        // Keep particles in bounds
-        if (p.x < 0) { p.x = 0; p.vx = -p.vx * 0.5f; }
-        if (p.x > FIELD_WIDTH) { p.x = FIELD_WIDTH; p.vx = -p.vx * 0.5f; }
-        if (p.y < 0) { p.y = 0; p.vy = -p.vy * 0.5f; }
-        if (p.y > FIELD_HEIGHT) { p.y = FIELD_HEIGHT; p.vy = -p.vy * 0.5f; }
-    }
-}
-
 void Survival::checkCollisions() {
     // Check player bullets hitting enemies
     for (auto& bullet : bullets) {
@@ -600,11 +555,6 @@ void Survival::draw() {
     // Draw white background
     al_clear_to_color(al_map_rgb(255, 255, 255));
     
-    // Draw particles first (background)
-    for (const auto& p : particles) {
-        drawParticle(p);
-    }
-    
     // Draw dash trails
     if (player.hasDashTrail && player.isAlive) {
         al_draw_line(player.dashStartX, player.dashStartY, player.x, player.y,
@@ -646,25 +596,14 @@ void Survival::draw() {
 }
 
 void Survival::drawMonster(const SurvivalMonster& monster) {
-    ImageCenter* IC = ImageCenter::get_instance();
+    int w = al_get_bitmap_width(monster.img);
+    int h = al_get_bitmap_height(monster.img);
+    float scale = (monster.radius * 2) / static_cast<float>(std::max(w, h));
     
-    ALLEGRO_BITMAP* sprite = IC->get(monster.spritePath);
-    if (sprite) {
-        int w = al_get_bitmap_width(sprite);
-        int h = al_get_bitmap_height(sprite);
-        float scale = (monster.radius * 2) / static_cast<float>(std::max(w, h));
-        
-        al_draw_scaled_bitmap(sprite, 
-            0, 0, w, h,
-            monster.x - monster.radius, monster.y - monster.radius,
-            monster.radius * 2, monster.radius * 2, 0);
-    } else {
-        // Fallback: draw colored circle
-        ALLEGRO_COLOR color = monster.isPlayer ? 
-            al_map_rgb(0, 150, 255) : al_map_rgb(255, 80, 80);
-        al_draw_filled_circle(monster.x, monster.y, monster.radius, color);
-        al_draw_circle(monster.x, monster.y, monster.radius, al_map_rgb(0, 0, 0), 2.0f);
-    }
+    al_draw_scaled_bitmap(monster.img, 
+        0, 0, w, h,
+        monster.x - monster.radius, monster.y - monster.radius,
+        monster.radius * 2, monster.radius * 2, 0);
 }
 
 void Survival::drawBullet(const Bullet& bullet) {
@@ -672,11 +611,6 @@ void Survival::drawBullet(const Bullet& bullet) {
         al_map_rgb(0, 100, 255) : al_map_rgb(255, 50, 50);
     al_draw_filled_circle(bullet.x, bullet.y, bullet.radius, color);
     al_draw_circle(bullet.x, bullet.y, bullet.radius, al_map_rgb(0, 0, 0), 1.0f);
-}
-
-void Survival::drawParticle(const Particle& particle) {
-    al_draw_filled_circle(particle.x, particle.y, particle.radius, 
-                         al_map_rgba(200, 200, 200, 200));
 }
 
 void Survival::drawUI() {
@@ -713,6 +647,11 @@ void Survival::drawUI() {
     al_draw_text(FC->caviar_dreams[SMALL], al_map_rgb(100, 100, 100),
                 FIELD_WIDTH / 2, FIELD_HEIGHT - 25, ALLEGRO_ALIGN_CENTER,
                 "WASD/Click: Move | Ctrl+Click: Dash | Right Click: Shoot");
+
+    // Draw credit
+    al_draw_text(FC->caviar_dreams[MEDIUM], al_map_rgb(100, 100, 100),
+                200, FIELD_HEIGHT - 35, ALLEGRO_ALIGN_CENTER,
+                "Credit (game idea): Lin Yi@lyi");
 }
 
 void Survival::drawGameOver() {
@@ -774,6 +713,4 @@ void Survival::saveHighScore() {
     Player::getPlayer()->savePlayerData();
 }
 
-void Survival::end() {
-    // Cleanup if needed
-}
+void Survival::end() {}
